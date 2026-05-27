@@ -1,0 +1,31 @@
+# Progresso pessoal (cada um tem o seu)
+.robo_progresso.json
+
+# Slides (arquivos grandes — baixe pelo link da turma)
+*.pdf
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Claude Code (memórias locais)
+.claude/
