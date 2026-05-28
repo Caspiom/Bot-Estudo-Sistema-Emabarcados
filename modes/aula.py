@@ -140,11 +140,6 @@ def _dividir_falas(texto: str) -> list[str]:
     return falas
 
 
-def _renderizar_fala(fala: str) -> str:
-    """Converte markdown da fala em string pronta com ANSI."""
-    return "\n".join(_render_linha(l) for l in fala.splitlines())
-
-
 def apresentar_conteudo(titulo, arquivos):
     # Carrega texto: explicação estática ou fallback para slides brutos
     nome_base = arquivos[0].replace(".md", "_aula.md") if arquivos else ""

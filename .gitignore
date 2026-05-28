@@ -27,5 +27,15 @@ env/
 .DS_Store
 Thumbs.db
 
+# Fotos pessoais do professor (não versionar)
+mcamara.jpg
+mcamara-reduzida.png
+
+# Avaliações diárias (screenshots pessoais)
+Avalicoes-Diarias/
+
+# Cache de explicações geradas (caso seja criado futuramente)
+aulas/cache/
+
 # Claude Code (memórias locais)
 .claude/
