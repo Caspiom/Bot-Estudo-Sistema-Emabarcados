@@ -157,36 +157,41 @@ def apresentar_conteudo(titulo, arquivos):
     falas = _dividir_falas(texto)
     total = len(falas)
 
+    # Tela de abertura com retrato do prof.
     cls()
     title(f"🎓 {titulo}", C.CYAN)
     _exibir_marco_ascii(com_frase=True)
-    print(f"\n  {C.DIM}{total} partes — pressione Enter para avançar, s para pular{C.RESET}\n")
+    print(f"\n  {C.DIM}{total} falas — Enter para avançar · s para pular{C.RESET}")
+    input()
 
     for i, fala in enumerate(falas):
-        linhas = fala.splitlines()
-        # Título de seção aparece instantâneo; texto é animado
-        saida = []
-        for l in linhas:
-            saida.append((_render_linha(l), l.startswith("## ") or l.startswith("# ")))
-        for rendered, eh_titulo in saida:
-            if eh_titulo:
-                print(rendered)
-            else:
-                _typewrite(rendered + "\n")
+        com_frase_marco = random.random() < 0.2
+        frase = random.choice(FRASES_MARCO) if com_frase_marco else None
 
-        if random.random() < 0.2:
-            _typewrite(f"\n  {C.MAGENTA}{C.BOLD}🧑‍🏫 Marco:{C.RESET} {C.MAGENTA}\"{random.choice(FRASES_MARCO)}\"{C.RESET}\n")
+        cls()
+        title(f"🎓 {titulo}", C.CYAN)
+        _exibir_marco_ascii()
+        print(f"\n  {C.DIM}[{i + 1}/{total}]{C.RESET}\n")
+
+        for l in fala.splitlines():
+            if l.startswith("## ") or l.startswith("# "):
+                print(_render_linha(l))
+            else:
+                _typewrite(_render_linha(l) + "\n")
+
+        if frase:
+            _typewrite(f"\n  {C.MAGENTA}{C.BOLD}🧑‍🏫 Marco:{C.RESET} {C.MAGENTA}\"{frase}\"{C.RESET}\n")
 
         if i < total - 1:
             op = input(f"\n  {C.DIM}· · ·{C.RESET}  ").lower().strip()
-            print()
             if op == "s":
                 break
         else:
-            print(f"\n  {C.GREEN}Fim da aula!{C.RESET}")
+            cls()
+            title(f"🎓 {titulo}", C.CYAN)
+            _exibir_marco_ascii()
             print(frase_marco())
-
-    hr()
+            input(f"\n  {C.DIM}[Enter para voltar]{C.RESET}  ")
 
 
 def _listar_topicos(prefix, cor_header, label_prova):
