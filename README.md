@@ -26,10 +26,10 @@ python3 roboestudo.py
 | Modo | Descrição |
 |------|-----------|
 | 🎓 **Aula com o Prof. Câmara** | Explicação didática de cada tópico no estilo do professor, com animação de texto e retrato ASCII |
+| 📝 **Avaliações Diárias** | Questões reais das avaliações diárias do Prof. Marco Câmara |
 | 📚 **Estudo por Tópico** | Escolhe P1 ou P2, depois o tópico, e pratica questões do banco principal |
 | ⚡ **Quiz Inteligente** | 10 questões que priorizam seus pontos fracos e os tiers mais cobrados em prova |
 | 🃏 **Flashcards** | Termos e definições para revisar rápido |
-| 📝 **Avaliações Diárias** | Questões reais das avaliações diárias do Prof. Marco Câmara |
 | 📊 **Ver Progresso** | Aproveitamento por tópico, erros frequentes e nota estimada |
 
 ---
