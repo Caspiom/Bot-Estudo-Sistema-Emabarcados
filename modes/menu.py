@@ -32,10 +32,18 @@ def menu():
             )
         hr()
         print(f"\n  {C.BOLD}O que vamos fazer?{C.RESET}\n")
-        print(f"  {C.YELLOW}[1]{C.RESET} 🎓 Aula com o Prof. Marco  {C.DIM}(todo o conteúdo dos slides){C.RESET}")
-        print(f"  {C.YELLOW}[2]{C.RESET} 📋 Avaliações Diárias  {C.DIM}(questões reais das aulas){C.RESET}")
-        print(f"  {C.YELLOW}[3]{C.RESET} 📚 Estudo por Tópico")
-        print(f"  {C.YELLOW}[4]{C.RESET} ⚡ Quiz Inteligente  {C.DIM}(prioriza seus pontos fracos){C.RESET}")
+        print(
+            f"  {C.YELLOW}[1]{C.RESET} 🎓 Aula com o Prof. Marco  {C.DIM}(todo o conteúdo dos slides){C.RESET}"
+        )
+        print(
+            f"  {C.YELLOW}[2]{C.RESET} 📋 Avaliações Diárias  {C.DIM}(questões reais das aulas){C.RESET}"
+        )
+        print(
+            f"  {C.YELLOW}[3]{C.RESET} 📚 Estudo por Tópico {C.DIM}(Questões geradas por IA com base nos slides){C.RESET}"
+        )
+        print(
+            f"  {C.YELLOW}[4]{C.RESET} ⚡ Quiz Inteligente  {C.DIM}(prioriza seus pontos fracos){C.RESET}"
+        )
         print(f"  {C.YELLOW}[5]{C.RESET} 🃏 Flashcards")
         print(f"  {C.YELLOW}[6]{C.RESET} 📊 Ver Progresso")
         print(f"  {C.YELLOW}[7]{C.RESET} 🚪 Sair\n")
@@ -55,5 +63,7 @@ def menu():
         elif e == "7":
             cls()
             save_progress(prog)
-            print(f"\n  {C.GREEN}{C.BOLD}💪 Bons estudos! Você consegue na prova de 9/06!{C.RESET}\n")
+            print(
+                f"\n  {C.GREEN}{C.BOLD}💪 Bons estudos! Você consegue na prova de 9/06!{C.RESET}\n"
+            )
             break
