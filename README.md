@@ -8,9 +8,11 @@ Cobre todo o conteúdo das duas provas: aulas explicadas, questões de múltipla
 
 ## Vídeo de Exemplo
 
-![Demo](demo.gif)
-
-> Demonstração do modo **Aula com o Prof. Câmara** em funcionamento.
+<div align="center">
+  <img src="assets/demo.gif" width="800" alt="Demo RoboEstudo">
+  <br><br>
+  <em>Demonstração do modo <strong>Aula com o Prof. Câmara</strong> em funcionamento.</em>
+</div>
 
 ---
 
