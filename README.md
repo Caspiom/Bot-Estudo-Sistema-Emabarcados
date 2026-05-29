@@ -6,6 +6,14 @@ Cobre todo o conteúdo das duas provas: aulas explicadas, questões de múltipla
 
 ---
 
+## Vídeo de Exemplo
+
+<video src="Aula-Exemplo.mp4" controls width="100%"></video>
+
+> Demonstração do modo **Aula com o Prof. Câmara** em funcionamento.
+
+---
+
 ## Requisitos
 
 - Python 3.8+
