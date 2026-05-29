@@ -41,6 +41,21 @@ def pause():
     ask("\n  [Enter para continuar...]")
 
 
+def nav_prompt(i: int, total: int) -> str:
+    """Navegação pós-item. Retorna 'proximo', 'voltar' ou 'menu'."""
+    ultima = i >= total - 1
+    partes = ["[Enter] resultado" if ultima else "[Enter] próxima"]
+    if i > 0:
+        partes.append("[v] anterior")
+    partes.append("[m] menu")
+    r = ask(f"\n  {C.DIM}{' · '.join(partes)}{C.RESET}  ").lower().strip()
+    if r == "v" and i > 0:
+        return "voltar"
+    if r == "m":
+        return "menu"
+    return "proximo"
+
+
 def barra(pct, w=28):
     f = int(pct / 100 * w)
     cor = C.GREEN if pct >= 70 else C.YELLOW if pct >= 50 else C.RED

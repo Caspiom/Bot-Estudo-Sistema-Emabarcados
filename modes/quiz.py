@@ -1,6 +1,6 @@
 import random
 
-from core.ui import C, cls, hr, title, ask, pause, resultado_sessao
+from core.ui import C, cls, hr, title, ask, pause, resultado_sessao, nav_prompt
 from core.executor import rodar_questao
 from core.progress import save_progress
 from data.questoes import QUESTOES
@@ -44,12 +44,25 @@ def modo_quiz(prog, n=10):
     cls()
     title(f"⚡ QUIZ — {label} — {len(qs)} questões", C.MAGENTA)
     pause()
+    i = 0
+    seen: set[int] = set()
     corretas = 0
-    for i, q in enumerate(qs, 1):
+    while i < len(qs):
+        q = qs[i]
         cls()
         hr()
-        corretas += int(rodar_questao(q, i, len(qs), prog))
-        save_progress(prog)
-        pause()
-    resultado_sessao(corretas, len(qs))
+        primeira_vez = i not in seen
+        acertou = rodar_questao(q, i + 1, len(qs), prog, update_prog=primeira_vez)
+        if primeira_vez:
+            seen.add(i)
+            corretas += int(acertou)
+            save_progress(prog)
+        nav = nav_prompt(i, len(qs))
+        if nav == "voltar":
+            i -= 1
+        elif nav == "menu":
+            return
+        else:
+            i += 1
+    resultado_sessao(corretas, len(seen))
     pause()

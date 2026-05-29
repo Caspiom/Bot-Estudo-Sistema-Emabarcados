@@ -96,7 +96,7 @@ def exec_complete(q):
     return v.startswith("s")
 
 
-def rodar_questao(q, n, total, prog):
+def rodar_questao(q, n, total, prog, update_prog=True):
     cabecalho_questao(q, n, total)
     t = q["tipo"]
     if t == "MC":
@@ -107,12 +107,13 @@ def rodar_questao(q, n, total, prog):
         acertou = exec_calc(q)
     else:
         acertou = exec_complete(q)
-    prog["total_q"] += 1
-    prog["total_c"] += int(acertou)
-    tp = q["topico"]
-    prog["topicos"].setdefault(tp, {"f": 0, "c": 0})
-    prog["topicos"][tp]["f"] += 1
-    prog["topicos"][tp]["c"] += int(acertou)
-    if not acertou:
-        prog["erros"][q["id"]] = prog["erros"].get(q["id"], 0) + 1
+    if update_prog:
+        prog["total_q"] += 1
+        prog["total_c"] += int(acertou)
+        tp = q["topico"]
+        prog["topicos"].setdefault(tp, {"f": 0, "c": 0})
+        prog["topicos"][tp]["f"] += 1
+        prog["topicos"][tp]["c"] += int(acertou)
+        if not acertou:
+            prog["erros"][q["id"]] = prog["erros"].get(q["id"], 0) + 1
     return acertou

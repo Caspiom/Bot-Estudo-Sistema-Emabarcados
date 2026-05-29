@@ -8,7 +8,7 @@ import sys
 import time
 from pathlib import Path
 
-from core.ui import C, cls, hr, title, ask, pause, resultado_sessao
+from core.ui import C, cls, hr, title, ask, pause, resultado_sessao, nav_prompt
 from core.executor import rodar_questao
 from core.progress import save_progress
 from data.topicos import TOPICOS, AULAS_MAP
@@ -161,10 +161,12 @@ def apresentar_conteudo(titulo, arquivos):
     cls()
     title(f"🎓 {titulo}", C.CYAN)
     _exibir_marco_ascii(com_frase=True)
-    print(f"\n  {C.DIM}{total} falas — Enter para avançar · s para pular{C.RESET}")
+    print(f"\n  {C.DIM}{total} falas — Enter avança · v volta · s pula · m menu{C.RESET}")
     input()
 
-    for i, fala in enumerate(falas):
+    i = 0
+    while i < total:
+        fala = falas[i]
         com_frase_marco = random.random() < 0.2
         frase = random.choice(FRASES_MARCO) if com_frase_marco else None
 
@@ -182,16 +184,28 @@ def apresentar_conteudo(titulo, arquivos):
         if frase:
             _typewrite(f"\n  {C.MAGENTA}{C.BOLD}🧑‍🏫 Marco:{C.RESET} {C.MAGENTA}\"{frase}\"{C.RESET}\n")
 
-        if i < total - 1:
-            op = input(f"\n  {C.DIM}· · ·{C.RESET}  ").lower().strip()
-            if op == "s":
-                break
-        else:
+        if i == total - 1:
             cls()
             title(f"🎓 {titulo}", C.CYAN)
             _exibir_marco_ascii()
             print(frase_marco())
-            input(f"\n  {C.DIM}[Enter para voltar]{C.RESET}  ")
+            op = ask(f"\n  {C.DIM}[Enter para voltar · v fala anterior · m menu]{C.RESET}  ").lower().strip()
+            if op == "v" and i > 0:
+                i -= 1
+                continue
+            if op == "m":
+                return "menu"
+            break
+
+        op = ask(f"\n  {C.DIM}· · · (Enter próxima · v anterior · s pular · m menu){C.RESET}  ").lower().strip()
+        if op == "s":
+            break
+        elif op == "v" and i > 0:
+            i -= 1
+        elif op == "m":
+            return "menu"
+        else:
+            i += 1
 
 
 def _listar_topicos(prefix, cor_header, label_prova):
@@ -254,7 +268,9 @@ def modo_aula(prog):
             continue  # volta ao menu de prova
 
         titulo_escolhido, arquivo_escolhido = resultado
-        apresentar_conteudo(titulo_escolhido, [arquivo_escolhido])
+        sinal = apresentar_conteudo(titulo_escolhido, [arquivo_escolhido])
+        if sinal == "menu":
+            return
 
         # Questões pós-aula
         topico_key = next(
@@ -278,12 +294,25 @@ def modo_aula(prog):
                 random.shuffle(qs)
                 cls()
                 title(f"QUESTÕES — {titulo_escolhido}", C.CYAN)
+                qi = 0
+                seen: set[int] = set()
                 corretas = 0
-                for i, q in enumerate(qs, 1):
+                while qi < len(qs):
+                    q = qs[qi]
                     cls()
                     hr()
-                    corretas += int(rodar_questao(q, i, len(qs), prog))
-                    save_progress(prog)
-                    pause()
-                resultado_sessao(corretas, len(qs))
+                    primeira_vez = qi not in seen
+                    acertou = rodar_questao(q, qi + 1, len(qs), prog, update_prog=primeira_vez)
+                    if primeira_vez:
+                        seen.add(qi)
+                        corretas += int(acertou)
+                        save_progress(prog)
+                    nav = nav_prompt(qi, len(qs))
+                    if nav == "voltar":
+                        qi -= 1
+                    elif nav == "menu":
+                        return
+                    else:
+                        qi += 1
+                resultado_sessao(corretas, len(seen))
                 pause()
