@@ -12,7 +12,6 @@ from core.ui import C, cls, hr, title, ask, pause, resultado_sessao, nav_prompt
 from core.executor import rodar_questao
 from core.progress import save_progress
 from data.topicos import TOPICOS, AULAS_MAP
-from data.questoes import QUESTOES
 from data.avaliacoes import AVALIACOES
 
 AULAS_DIR = Path(__file__).parent.parent / "aulas"
@@ -278,29 +277,26 @@ def modo_aula(prog):
             None,
         )
 
-        print(f"\n  {C.BOLD}O que fazer agora?{C.RESET}")
-        print(f"  {C.YELLOW}[1]{C.RESET} Praticar questões (banco principal)")
-        print(f"  {C.YELLOW}[2]{C.RESET} Questões reais do Prof. Câmara")
-        print(f"  {C.YELLOW}[0]{C.RESET} Voltar\n")
-        e = ask("  Escolha: ")
-
-        if e in ("1", "2"):
-            qs = [q for q in (QUESTOES if e == "1" else AVALIACOES)
-                  if q["topico"] == topico_key] if topico_key else []
-            if not qs:
-                print(f"\n  {C.YELLOW}Sem questões mapeadas para este tópico ainda.{C.RESET}")
-                pause()
-            else:
+        qs = [q for q in AVALIACOES if q["topico"] == topico_key] if topico_key else []
+        if not qs:
+            print(f"\n  {C.YELLOW}Sem avaliações diárias mapeadas para este tópico ainda.{C.RESET}")
+            pause()
+        else:
+            print(f"\n  {C.BOLD}Aula concluída! Hora das avaliações diárias do Prof. Câmara.{C.RESET}")
+            print(f"  {C.YELLOW}[1]{C.RESET} Responder avaliações diárias ({len(qs)} questões)")
+            print(f"  {C.YELLOW}[0]{C.RESET} Voltar\n")
+            e = ask("  Escolha: ")
+            if e == "1":
                 random.shuffle(qs)
                 cls()
-                title(f"QUESTÕES — {titulo_escolhido}", C.CYAN)
+                title(f"📋 AVALIAÇÕES DIÁRIAS — {titulo_escolhido}", C.MAGENTA)
                 qi = 0
                 seen: set[int] = set()
                 corretas = 0
                 while qi < len(qs):
                     q = qs[qi]
                     cls()
-                    hr()
+                    hr(C.MAGENTA)
                     primeira_vez = qi not in seen
                     acertou = rodar_questao(q, qi + 1, len(qs), prog, update_prog=primeira_vez)
                     if primeira_vez:
