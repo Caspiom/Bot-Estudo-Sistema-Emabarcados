@@ -11,13 +11,13 @@ QUESTOES = [
      "resposta": "B",
      "explicacao": "Botões são entradas DIGITAIS. 'Suporte a analógicas' não é desafio de botões. Desafios reais: debouncing, pull-up/down, isolamento em cargas pesadas."},
 
-    {"id": "av_a02", "topico": "p1_arduino", "tipo": "MC",
+    {"id": "av_a02", "topico": "p1_arduino", "tipo": "MULTI",
      "pergunta": "Identifique DUAS vantagens do uso de relês convencionais como saídas digitais de SE. (Assinale as duas corretas)",
      "opcoes": ["A) Performance",
                 "B) Isolamento do circuito acionador em relação à carga",
                 "C) Suporte a cargas de qualquer tipo (DC e AC)",
                 "D) Consumo energético"],
-     "resposta": "BC",
+     "resposta": ["B", "C"],
      "explicacao": "Relê: isolamento elétrico (protege o µC) + suporte a DC e AC (qualquer tipo de carga). Performance e consumo NÃO são vantagens do relê."},
 
     {"id": "av_a03", "topico": "p1_arduino", "tipo": "ESCREVA",
@@ -43,13 +43,13 @@ QUESTOES = [
      "resposta": "C",
      "explicacao": "PORTB = 0b00100000 zera todos os outros bits. PORTB |= (1<<PB5) preserva os demais — comportamento non-destructive, essencial ao programar registradores."},
 
-    {"id": "av_r03", "topico": "p1_registr", "tipo": "MC",
+    {"id": "av_r03", "topico": "p1_registr", "tipo": "MULTI",
      "pergunta": "Nas operações de atribuição de valores a bits, podemos dizer que: (assinale as DUAS corretas)",
      "opcoes": ["A) Lógica OU pode 'setar' bits específicos (colocar valor 1)",
                 "B) Lógica E pode 'resetar' bits específicos (colocar valor 0)",
                 "C) Lógica OU EXCLUSIVO pode 'setar' bits específicos (colocar valor 1)",
                 "D) Lógica NOT com operador '!' pode inverter todos os bits de uma palavra"],
-     "resposta": "AB",
+     "resposta": ["A", "B"],
      "explicacao": "OR (|) com máscara 1 → ativa bits. AND (&) com máscara 0 → desativa bits. XOR (^) inverte. NOT (~) em C inverte bit a bit mas não é o '!'."},
 
     {"id": "av_r04", "topico": "p1_registr", "tipo": "MC",

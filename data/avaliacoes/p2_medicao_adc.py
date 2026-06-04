@@ -24,13 +24,13 @@ QUESTOES = [
      "resposta": "A",
      "explicacao": "A não-linearidade (e por consequência falhas de precisão) ocorre tipicamente no MEIO da escala, onde a resposta do sensor desvia mais da reta ideal."},
 
-    {"id": "av_q04", "topico": "p2_medicao", "tipo": "MC",
+    {"id": "av_q04", "topico": "p2_medicao", "tipo": "MULTI",
      "pergunta": "A exatidão é apresentada em sensores digitais no formato ±(X%+Y). Identifique os valores X e Y: (assinale as duas corretas)",
      "opcoes": ["A) X é o percentual ACIMA OU ABAIXO do valor real que foi apresentado na medição",
                 "B) Y é a variação da exatidão com a temperatura",
                 "C) X é a variação da precisão na medida",
                 "D) Y é a variação no último dígito medido"],
-     "resposta": "AD",
+     "resposta": ["A", "D"],
      "explicacao": "X% = erro percentual relativo ao valor real. Y = variação no último dígito (resolução). Ex: ±(2%+2): lendo 10,0 → real entre 9,78 e 10,22."},
 
     {"id": "av_q05", "topico": "p2_medicao", "tipo": "MC",

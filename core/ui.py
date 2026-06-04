@@ -154,6 +154,7 @@ def selecionar_opcao(opcoes: list) -> int:
         sys.stdout.write(f"\033[2K{hint}\n")
         sys.stdout.flush()
 
+    termios.tcflush(sys.stdin.fileno(), termios.TCIFLUSH)
     return idx
 
 
@@ -188,6 +189,7 @@ def selecionar_multiplas(opcoes: list) -> list:
         print(l)
     print(hint)
 
+    aviso = ""
     while True:
         try:
             ch = _getch()
@@ -196,21 +198,29 @@ def selecionar_multiplas(opcoes: list) -> list:
             sys.exit(0)
 
         if ch in (b'\r', b'\n'):
-            break
+            if not marcados:
+                aviso = f"  {C.RED}Marque ao menos uma opção antes de confirmar.{C.RESET}"
+            else:
+                break
         elif ch == b'\x1b[A':
             idx = (idx - 1) % n
+            aviso = ""
         elif ch == b'\x1b[B':
             idx = (idx + 1) % n
+            aviso = ""
         elif ch == b' ':
             if idx in marcados:
                 marcados.discard(idx)
             else:
                 marcados.add(idx)
+            aviso = ""
 
+        hint_linha = aviso if aviso else f"  {C.DIM}↑↓ navegar · Espaço marcar/desmarcar · Enter confirmar{C.RESET}"
         sys.stdout.write(f"\033[{n + 1}A\r")
         for l in linhas():
             sys.stdout.write(f"\033[2K{l}\n")
-        sys.stdout.write(f"\033[2K{hint}\n")
+        sys.stdout.write(f"\033[2K{hint_linha}\n")
         sys.stdout.flush()
 
+    termios.tcflush(sys.stdin.fileno(), termios.TCIFLUSH)
     return sorted(marcados)
