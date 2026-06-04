@@ -1,4 +1,4 @@
-from core.ui import C, ask, pause, cls, hr, barra, resultado_sessao
+from core.ui import C, ask, pause, cls, hr, barra, resultado_sessao, selecionar_opcao, selecionar_multiplas
 from data.topicos import TOPICOS
 
 
@@ -17,19 +17,31 @@ def cabecalho_questao(q, n, total):
 
 
 def exec_mc(q):
-    for op in q["opcoes"]:
-        print(f"    {op}")
     print()
-    while True:
-        r = ask("  Sua resposta (A/B/C/D): ").upper()
-        if r in "ABCD" and len(r) == 1:
-            break
-        print(f"  {C.RED}Digite A, B, C ou D.{C.RESET}")
-    acertou = r == q["resposta"]
+    idx = selecionar_opcao(q["opcoes"])
+    letter = chr(ord('A') + idx)
+    acertou = letter == q["resposta"]
     if acertou:
         print(f"\n  {C.GREEN}{C.BOLD}✅ CORRETO!{C.RESET}")
     else:
         print(f"\n  {C.RED}{C.BOLD}❌ Incorreto. Resposta: {q['resposta']}{C.RESET}")
+    print(f"\n  {C.CYAN}💡 {q['explicacao']}{C.RESET}")
+    return acertou
+
+
+def exec_multi(q):
+    """Múltiplas alternativas corretas — checkboxes."""
+    print(f"\n  {C.YELLOW}Marque todas as alternativas corretas:{C.RESET}\n")
+    indices = selecionar_multiplas(q["opcoes"])
+    letras = [chr(ord('A') + i) for i in indices]
+    corretas = sorted(q["resposta"])
+    acertou = sorted(letras) == corretas
+    marcadas = ", ".join(letras) if letras else f"{C.DIM}(nenhuma){C.RESET}"
+    print(f"\n  Marcadas: {C.BOLD}{marcadas}{C.RESET}")
+    if acertou:
+        print(f"\n  {C.GREEN}{C.BOLD}✅ CORRETO!{C.RESET}")
+    else:
+        print(f"\n  {C.RED}{C.BOLD}❌ Incorreto. Corretas: {', '.join(corretas)}{C.RESET}")
     print(f"\n  {C.CYAN}💡 {q['explicacao']}{C.RESET}")
     return acertou
 
@@ -101,6 +113,8 @@ def rodar_questao(q, n, total, prog, update_prog=True):
     t = q["tipo"]
     if t == "MC":
         acertou = exec_mc(q)
+    elif t == "MULTI":
+        acertou = exec_multi(q)
     elif t == "ESCREVA":
         acertou = exec_escreva(q)
     elif t == "CALC":
