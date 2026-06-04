@@ -57,4 +57,14 @@ QUESTOES = [
      "opcoes": ["A) B00010010", "B) 237", "C) -18", "D) False"],
      "resposta": "B",
      "explicacao": "18 = 0b00010010. ~18 inverte todos os bits em 8 bits → 0b11101101 = 237."},
+
+    {"id": "av_r05", "topico": "p1_registr", "tipo": "MC",
+     "gabarito_ia": True,
+     "pergunta": "Para associar o pino 13 do Arduíno Uno à entrada 5 da porta B do ATMega328P, devemos consultar ...",
+     "opcoes": ["A) ... o datasheet do microcontrolador ATMega328P;",
+                "B) ... o código;",
+                "C) ... o esquema eletrônico do Arduíno Uno;",
+                "D) ... a conexão elétrica do pino ao processador USB;"],
+     "resposta": "A",
+     "explicacao": "O datasheet do ATMega328P contém a tabela de mapeamento entre os pinos físicos do CI e os registradores (Port B, bit 5 = PB5 = pino 13 do Arduino). É a fonte oficial para saber a correspondência exata."},
 ]

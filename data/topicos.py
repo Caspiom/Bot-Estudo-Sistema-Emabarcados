@@ -9,6 +9,7 @@ TOPICOS = {
     "p2_medicao":   "Medição: Precisão, Exatidão, Linearidade",
     "p2_adc":       "Resolução, ADC, DAC e PWM",
     "p2_interrup":  "Interrupções e Timers",
+    "p2_projeto":   "Projeto de SE: Linguagens, PLCs e Protocolos",
 }
 
 # Mapeamento tópico → arquivo de aula markdown
@@ -26,5 +27,6 @@ AULAS_MAP = {
                      "p2_03_media_movel.md"],
     "p2_adc":       ["p2_04_escalas_adc.md", "p2_05_arquitetura_adc.md",
                      "p2_06_dac.md", "p2_07_pwm.md"],
-    "p2_interrup":  ["p2_09_interrupcoes.md", "p2_10_timers.md", "p2_11_projeto_se.md"],
+    "p2_interrup":  ["p2_09_interrupcoes.md", "p2_10_timers.md"],
+    "p2_projeto":   ["p2_11_projeto_se.md"],
 }

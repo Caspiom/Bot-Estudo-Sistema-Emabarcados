@@ -1,0 +1,43 @@
+"""Avaliações diárias — Interrupções e Timers."""
+
+QUESTOES = [
+    {"id": "av_i01", "topico": "p2_interrup", "tipo": "MC",
+     "gabarito_ia": True,
+     "pergunta": "Para comparar o valor do timer0 com o registro B, qual o vetor de interrupção deve ser utilizado?",
+     "opcoes": ["A) 9",
+                "B) 12",
+                "C) 15",
+                "D) 16"],
+     "resposta": "D",
+     "explicacao": "No ATMega328P, TIMER0 COMPB corresponde ao vetor de interrupção 16 (endereço 0x001C). TIMER0 COMPA = 15, TIMER1 COMPB = 13, TIMER2 COMPB = 9."},
+
+    {"id": "av_i02", "topico": "p2_interrup", "tipo": "MC",
+     "gabarito_ia": True,
+     "pergunta": "Para medir o tempo consumido entre dois eventos externos específicos, qual o tipo de interrupção deve ser utilizada?",
+     "opcoes": ["A) Captura de Evento no timer1",
+                "B) External interrupt request 0 e 1",
+                "C) Pin change interrupt request 0",
+                "D) Analog Comparator"],
+     "resposta": "A",
+     "explicacao": "A Captura de Evento (Input Capture) do Timer1 registra automaticamente o valor do contador no momento de um evento externo no pino ICP1 — projetado exatamente para medir intervalos de tempo entre dois eventos."},
+
+    {"id": "av_i03", "topico": "p2_interrup", "tipo": "MULTI",
+     "gabarito_ia": True,
+     "pergunta": "Os timers 0, 1 e 2 possuem características semelhantes, mas há algumas diferenças entre eles. Identifique as DUAS alternativas que identificam estas diferenças.",
+     "opcoes": ["A) Um dos timers possui 16 bits",
+                "B) Um dos timers utiliza um clock mais lento",
+                "C) Um dos timers possui um vetor de interrupção a mais que os outros",
+                "D) Um dos timers não pode ser alterado pelo usuário"],
+     "resposta": ["A", "C"],
+     "explicacao": "Timer1 é o único de 16 bits (Timer0 e Timer2 são 8 bits). Timer1 também tem o vetor CAPT (Captura de Evento), totalizando 4 vetores contra 3 dos outros (COMPA, COMPB, OVF)."},
+
+    {"id": "av_i04", "topico": "p2_interrup", "tipo": "MC",
+     "gabarito_ia": True,
+     "pergunta": "Das funções abaixo, uma delas está disponível nos 3 timers do Arduíno. Qual é ela?",
+     "opcoes": ["A) Retardo de tempo",
+                "B) Contadores de milissegundos e microssegundos",
+                "C) PWM",
+                "D) Emissão de tons (áudio)"],
+     "resposta": "C",
+     "explicacao": "PWM está disponível nos 3 timers: Timer0 → pinos 5 e 6; Timer1 → pinos 9 e 10; Timer2 → pinos 3 e 11. delay()/millis()/micros() usam apenas Timer0; tone() usa Timer2."},
+]

@@ -2,6 +2,11 @@ from core.ui import C, ask, pause, cls, hr, barra, resultado_sessao, selecionar_
 from data.topicos import TOPICOS
 
 
+def _aviso_ia(q):
+    if q.get("gabarito_ia"):
+        print(f"\n  {C.YELLOW}⚠️  Gabarito corrigido por IA — o Prof. Câmara ainda não postou as respostas oficiais.{C.RESET}")
+
+
 def cabecalho_questao(q, n, total):
     tier_info = {
         "S": (C.RED, "CRÍTICO"),
@@ -26,6 +31,7 @@ def exec_mc(q):
     else:
         print(f"\n  {C.RED}{C.BOLD}❌ Incorreto. Resposta: {q['resposta']}{C.RESET}")
     print(f"\n  {C.CYAN}💡 {q['explicacao']}{C.RESET}")
+    _aviso_ia(q)
     return acertou
 
 
@@ -43,6 +49,7 @@ def exec_multi(q):
     else:
         print(f"\n  {C.RED}{C.BOLD}❌ Incorreto. Corretas: {', '.join(corretas)}{C.RESET}")
     print(f"\n  {C.CYAN}💡 {q['explicacao']}{C.RESET}")
+    _aviso_ia(q)
     return acertou
 
 
@@ -54,7 +61,9 @@ def exec_escreva(q):
         if l == "" and linhas and linhas[-1] == "":
             break
         linhas.append(l)
-    print(f"\n  {C.CYAN}📚 Resposta esperada:{C.RESET}\n  {q['resposta_esperada']}\n")
+    print(f"\n  {C.CYAN}📚 Resposta esperada:{C.RESET}\n  {q['resposta_esperada']}")
+    _aviso_ia(q)
+    print()
     print(f"  {C.YELLOW}Avalie-se honestamente:{C.RESET}")
     for n, d in [("1", "Não sabia nada"), ("2", "Sabia pouco"),
                  ("3", "Sabia parcialmente"), ("4", "Sabia a maior parte"),
@@ -93,6 +102,7 @@ def exec_calc(q):
     else:
         print(f"\n  {C.RED}{C.BOLD}❌ Incorreto. Correto: {correto} {q.get('unidade', '')}{C.RESET}")
     print(f"\n  {C.CYAN}💡 {q['explicacao']}{C.RESET}")
+    _aviso_ia(q)
     return acertou
 
 
@@ -101,6 +111,7 @@ def exec_complete(q):
     ask("  Sua resposta: ")
     print(f"\n  {C.CYAN}✅ Esperado:{C.RESET} {q['resposta']}")
     print(f"  {C.CYAN}💡 {q['explicacao']}{C.RESET}")
+    _aviso_ia(q)
     while True:
         v = ask("\n  Você acertou? (s/n): ").lower()
         if v in ("s", "n", "sim", "não", "nao"):
