@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulado P2 · Sistemas Embarcados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Spline+Sans+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4efe6; --paper-2:#fbf8f1; --ink:#23211d; --ink-soft:#56514a;
+    --line:#d8cfbf; --red:#a8331f; --red-soft:#c75a44; --green:#3f6b4a;
+    --green-soft:#e4efe2; --accent:#1f3a4d; --amber:#9a6b1e; --shadow:rgba(40,32,20,.13);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Spectral',Georgia,serif;
+    background:radial-gradient(circle at 12% -5%,#fbf8f1 0%,transparent 45%),
+      radial-gradient(circle at 95% 5%,#efe7d8 0%,transparent 40%),var(--paper);
+    color:var(--ink);line-height:1.55;padding:0 0 150px;-webkit-font-smoothing:antialiased;
+  }
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");opacity:.6}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px;position:relative;z-index:1}
+
+  header{padding:56px 0 32px;text-align:center;border-bottom:2px solid var(--ink)}
+  .tag{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:.7rem;
+    letter-spacing:.32em;text-transform:uppercase;color:var(--red);
+    border:1.5px solid var(--red);padding:5px 14px;border-radius:2px;margin-bottom:18px}
+  header h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(2rem,5.5vw,3.2rem);
+    line-height:1.02;letter-spacing:-.01em}
+  header .sub{font-style:italic;color:var(--ink-soft);margin-top:10px;font-size:1.05rem}
+  header .meta{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--ink-soft);margin-top:16px}
+  .rules{margin:24px auto 0;max-width:700px;font-size:.92rem;color:var(--ink-soft);
+    background:var(--paper-2);border:1px solid var(--line);border-left:3px solid var(--red);
+    padding:14px 18px;border-radius:4px;text-align:left}
+  .rules b{color:var(--ink)}
+
+  .q{margin-top:38px;background:var(--paper-2);border:1px solid var(--line);
+    border-radius:8px;box-shadow:0 14px 34px -22px var(--shadow);overflow:hidden}
+  .q-head{display:flex;gap:16px;align-items:flex-start;padding:24px 26px 18px;
+    border-bottom:1px dashed var(--line)}
+  .q-num{flex:0 0 auto;font-family:'Fraunces',serif;font-weight:900;font-size:1.5rem;
+    color:var(--paper-2);background:var(--accent);width:46px;height:46px;border-radius:50%;
+    display:grid;place-items:center;line-height:1;box-shadow:0 4px 0 rgba(31,58,77,.25)}
+  .q-title{font-size:1.02rem}
+  .q-title strong{font-family:'Fraunces',serif;font-weight:600}
+  .q-title em{color:var(--accent)}
+
+  ul.opts{list-style:none;padding:8px 18px 14px}
+  li.opt{position:relative;border-radius:6px;transition:background .2s}
+  li.opt label{display:flex;gap:14px;align-items:flex-start;cursor:pointer;
+    padding:13px 14px;border-radius:6px;transition:background .15s}
+  li.opt label:hover{background:rgba(31,58,77,.05)}
+  .checkbox{flex:0 0 auto;width:24px;height:24px;border:2px solid var(--line);border-radius:6px;
+    background:#fff;display:grid;place-items:center;margin-top:1px;transition:.15s}
+  .checkbox svg{width:15px;height:15px;stroke:#fff;stroke-width:3.5;fill:none;
+    stroke-dasharray:24;stroke-dashoffset:24;transition:stroke-dashoffset .2s}
+  input[type=checkbox]{position:absolute;opacity:0;width:0;height:0}
+  input:checked + label .checkbox{background:var(--green);border-color:var(--green)}
+  input:checked + label .checkbox svg{stroke-dashoffset:0}
+  input:focus-visible + label .checkbox{outline:2px solid var(--accent);outline-offset:2px}
+  .bit{flex:0 0 auto;font-family:'Spline Sans Mono',monospace;font-weight:600;font-size:.8rem;
+    color:var(--red);background:rgba(168,51,31,.09);border:1px solid rgba(168,51,31,.25);
+    padding:2px 8px;border-radius:4px;margin-top:2px;min-width:34px;text-align:center}
+  input:checked + label .bit{background:var(--red);color:#fff;border-color:var(--red)}
+  .opt-txt{font-size:.96rem;color:var(--ink)}
+
+  .expl{display:none;margin:0 14px 10px 52px;font-size:.88rem;color:var(--ink-soft);
+    border-left:3px solid var(--line);padding:7px 12px;background:rgba(0,0,0,.018);
+    border-radius:0 6px 6px 0}
+  .expl .verdict{font-family:'Spline Sans Mono',monospace;font-weight:600;font-size:.7rem;
+    letter-spacing:.1em;text-transform:uppercase;margin-right:8px}
+  .expl .v-true{color:var(--green)} .expl .v-false{color:var(--red)}
+  .revealed .expl{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(-3px)}to{opacity:1}}
+  .revealed li.opt.should{background:var(--green-soft)}
+  .revealed li.opt.shouldnt{background:#f7e9e5}
+  .status{font-family:'Spline Sans Mono',monospace;font-size:.68rem;letter-spacing:.06em;
+    margin-left:auto;align-self:center;padding:3px 9px;border-radius:20px;white-space:nowrap}
+  .st-hit{background:var(--green);color:#fff}
+  .st-miss{background:var(--red);color:#fff}
+  .st-extra{background:var(--red);color:#fff}
+  .st-ok{background:rgba(0,0,0,.06);color:var(--ink-soft)}
+  .revealed .checkbox{display:none}
+
+  .q-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    padding:16px 26px;background:linear-gradient(var(--paper-2),#f1eadd);border-top:1px solid var(--line)}
+  .sum-box{display:flex;align-items:baseline;gap:10px}
+  .sum-label{font-family:'Spline Sans Mono',monospace;font-size:.7rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--ink-soft)}
+  .sum-val{font-family:'Fraunces',serif;font-weight:900;font-size:2.1rem;color:var(--red);
+    line-height:1;min-width:40px}
+  .correct-sum{display:none;font-family:'Spline Sans Mono',monospace;font-size:.78rem;
+    color:var(--ink-soft);align-self:center}
+  .correct-sum b{font-family:'Fraunces',serif;font-size:1.15rem;color:var(--green)}
+  .correct-sum.bad b{color:var(--red)}
+  .revealed .correct-sum{display:inline}
+  .score-box{display:none;align-items:baseline;gap:8px}
+  .score-label{font-family:'Spline Sans Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
+  .score-val{font-family:'Fraunces',serif;font-weight:900;font-size:1.8rem;line-height:1;color:var(--green)}
+  .score-val.bad{color:var(--red)}
+  .score-max{font-family:'Spline Sans Mono',monospace;font-size:.76rem;color:var(--ink-soft);align-self:flex-end;padding-bottom:3px}
+  .revealed .score-box{display:flex}
+  .grade-cell{display:flex;flex-direction:column;align-items:center;background:rgba(63,107,74,.22);border:1.5px solid #6fa07c;border-radius:6px;padding:5px 16px;min-width:90px}
+  .grade-cell .g-lbl{font-family:'Spline Sans Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:#a8d8b0}
+  .grade-cell .g-val{font-family:'Fraunces',serif;font-weight:900;font-size:1.5rem;color:#bfe6c8;line-height:1.2}
+  .grade-cell .g-sub{font-family:'Spline Sans Mono',monospace;font-size:.58rem;color:#6fa07c;letter-spacing:.06em}
+  .foot-btns{display:flex;gap:8px}
+  .btn{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.08em;
+    text-transform:uppercase;padding:8px 15px;border-radius:5px;cursor:pointer;border:1.5px solid;transition:.15s}
+  .clearbtn{background:none;border-color:var(--line);color:var(--ink-soft)}
+  .clearbtn:hover{border-color:var(--red);color:var(--red)}
+  .checkbtn{background:var(--accent);border-color:var(--accent);color:#fff}
+  .checkbtn:hover{background:#16384c}
+
+  .sheet{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(35,33,29,.97);
+    backdrop-filter:blur(8px);color:var(--paper);border-top:2px solid var(--red);
+    box-shadow:0 -10px 30px rgba(0,0,0,.25)}
+  .sheet-inner{max-width:880px;margin:0 auto;padding:11px 22px;display:flex;align-items:center;
+    gap:9px;flex-wrap:wrap;justify-content:center}
+  .sheet-title{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.18em;
+    text-transform:uppercase;color:#c9c0b3;margin-right:4px}
+  .cell{display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:5px 12px;min-width:54px}
+  .cell .c-q{font-family:'Spline Sans Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:#a89e8f}
+  .cell .c-v{font-family:'Fraunces',serif;font-weight:900;font-size:1.2rem;color:#fff}
+  .cell.filled{background:rgba(168,51,31,.22);border-color:var(--red-soft)}
+  .cell.filled .c-v{color:#ffb9a8}
+  .cell.match{background:rgba(63,107,74,.32);border-color:#6fa07c}
+  .cell.match .c-v{color:#bfe6c8}
+  .sheet .btn{margin-left:5px}
+  .revealbtn{background:var(--red);border-color:var(--red);color:#fff}
+  .revealbtn:hover{background:var(--red-soft)}
+  .printbtn{background:none;border-color:rgba(255,255,255,.3);color:#e9e2d4}
+  .printbtn:hover{border-color:#fff}
+
+  footer{text-align:center;margin-top:44px;font-family:'Spline Sans Mono',monospace;
+    font-size:.68rem;letter-spacing:.12em;color:var(--ink-soft)}
+  @media print{body{background:#fff;padding-bottom:0}.sheet,.foot-btns,.tag{display:none}
+    .q{box-shadow:none;break-inside:avoid}.revealed .checkbox{display:grid}}
+  @media(max-width:560px){.sum-val{font-size:1.7rem}.status{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="tag">SE · UCSAL · P2</span>
+    <h1>Sistemas Embarcados</h1>
+    <p class="sub">Simulado — 2ª Avaliação · Tópicos da Prova 2</p>
+    <p class="meta">Prof. Marco Antônio C. Câmara · Gabarito comentado</p>
+    <div class="rules">
+      Marque as afirmativas corretas — a <b>soma</b> é calculada automaticamente. Use <b>Conferir</b> em cada questão (ou <b>Conferir tudo</b> na barra inferior) para revelar o gabarito comentado. Todas as questões e respostas são baseadas exclusivamente nos slides das aulas.
+    </div>
+  </header>
+  <main id="exam"></main>
+  <footer>Simulado P2 · Sistemas Embarcados · UCSAL 2026</footer>
+</div>
+
+<div class="sheet">
+  <div class="sheet-inner" id="sheet">
+    <span class="sheet-title">Respostas</span>
+    <button class="btn revealbtn" id="revealAll">Conferir tudo</button>
+    <button class="btn printbtn" onclick="window.print()">Imprimir</button>
+  </div>
+</div>
+
+<script>
+// opt: [bit, texto, correta(bool), explicação]
+const QUESTIONS = [
+  { n:1,
+    title:'<strong>Precisão, Exatidão, Linearidade e Resolução.</strong> Some as afirmativas corretas:',
+    opts:[
+      [1,'Uma medição pode ser precisa (estável e repetível) mesmo sendo inexata, pois precisão não tem relação com a obtenção do valor correto;',true,'Correto — o slide afirma: "Precisão não tem relação com a obtenção do valor exato. Se o valor medido for fixo, medições precisas retornarão valores sempre muito próximos". Um instrumento pode errar sempre pelo mesmo valor.'],
+      [2,'Precisão, exatidão e linearidade são características exclusivas de medições digitais;',false,'Incorreto — o slide é explícito: "Nenhum destes parâmetros tem relação obrigatória com medições digitais! Qualquer tipo de medida, inclusive com instrumentos analógicos ou manuais, é afetada pela precisão, exatidão e linearidade".'],
+      [4,'O ADC do Arduíno Uno possui resolução de 10 bits, correspondendo a 1024 valores distintos (de 0 a 1023);',true,'Correto — o slide afirma: "Arduíno: 10 bits de resolução no ADC"; 2¹⁰ = 1024.'],
+      [8,'A resolução de uma medição analógica é determinada pelo sensor utilizado;',false,'Incorreto — o slide é claro: "Quem determina a resolução é o ADC (Conversor Analógico/Digital)". O sensor determina o sinal de entrada, não a resolução da leitura.'],
+      [16,'A não-linearidade é mais comum nos extremos da faixa de valores mensuráveis;',true,'Correto — o slide afirma: "É comum encontrar a não-linearidade nos extremos da faixa de valores mensuráveis". Nesses pontos, a relação entre grandeza medida e saída do sensor pode deixar de ser proporcional.'],
+      [32,'Com a referência interna de 1,1 V do Arduíno, a resolução melhora para aproximadamente 1 mV por contagem;',true,'Correto — o slide calcula: "Com a referência de 1,1V, teríamos 1mV. Isso implicaria em 4 dígitos, ou 1100 contagens" — melhora em relação aos ~4,89 mV por contagem com referência de 5V.']
+    ]},
+  { n:2,
+    title:'<strong>ADC: Arquitetura, Amostragem e Escalas.</strong> Some as afirmativas corretas:',
+    opts:[
+      [1,'O teorema de Nyquist exige uma frequência de amostragem de pelo menos o dobro da maior componente de frequência do sinal para representá-lo adequadamente;',true,'Correto — o slide cita: "O teorema de Nyquist diz que... uma frequência de amostragem pelo menos 2 vezes superior à maior componente de frequência do sinal é capaz de representar adequadamente o sinal original".'],
+      [2,'A arquitetura paralela (<em>flash</em>) de ADC é a mais indicada para altas resoluções por ser mais rápida;',false,'Incorreto — o slide afirma: "A arquitetura é rápida (tempo real), mas sua complexidade é muito grande para resoluções maiores". Para alta resolução, são usadas arquiteturas Pipeline, SAR e Sigma-Delta.'],
+      [4,'Para medir temperaturas de 0,0°C a 42,0°C com resolução de 0,1°C (421 valores distintos), é necessário um ADC de pelo menos 9 bits;',true,'Correto — o slide exemplifica: "421 valores; 2⁹ = 512 → são 9 bits". O 9º bit já cobre os 421 valores necessários.'],
+      [8,'O ADC do Arduíno Uno possui 16 entradas analógicas multiplexadas;',false,'Incorreto — o slide descreve "Multiplexação de 8 diferentes entradas analógicas". O Arduíno Uno R3 possui 6 pinos analógicos disponíveis ao usuário (A0–A5).'],
+      [16,'Escalas mal dimensionadas podem causar perda de resolução ao não ocupar toda a faixa de entrada do ADC;',true,'Correto — o slide ilustra: um sensor com saída de 0–2,5V conectado a um ADC com entrada de 0–5V resulta em "resolução perdida", pois apenas metade da escala é utilizada.'],
+      [32,'Arquiteturas de ADC como SAR e Sigma-Delta oferecem maior resolução que a paralela, porém com geração de retardo;',true,'Correto — o slide afirma: "Outras arquiteturas são mais adequadas para resoluções mais altas: Pipeline, SAR, Sigma-Delta. Estas arquiteturas geram retardo".']
+    ]},
+  { n:3,
+    title:'<strong>DAC, PWM e Memória do ATMega328P.</strong> Some as afirmativas corretas:',
+    opts:[
+      [1,'O Arduíno Uno R3 não possui DAC (<em>Digital to Analog Converter</em>) integrado;',true,'Correto — o slide afirma diretamente: "O Arduíno Uno não possui DAC integrado".'],
+      [2,'O PWM simula uma saída analógica controlando a amplitude (tensão máxima) do sinal de saída;',false,'Incorreto — o PWM controla o "percentual de tempo da saída no nível 1" (Duty Cycle). A tensão permanece digital (0V ou 5V); "o efeito analógico vem da tensão média na saída", não da amplitude.'],
+      [4,'O ATMega328P possui três tipos de memória distintos: Flash (não-volátil, guarda o sketch), SRAM (volátil, guarda variáveis) e EEPROM (não-volátil, dados persistentes);',true,'Correto — o slide confirma: "São 3 tipos de memória diferentes; O ATMega328P possui 3 tipos diferentes de memória (Flash, SRAM e EEPROM)".'],
+      [8,'A resolução de ajuste do <em>Duty Cycle</em> do PWM no Arduíno Uno é de 10 bits;',false,'Incorreto — o slide afirma: "Resolução para ajuste do Duty Cycle: 8 bits". O ADC é que tem 10 bits; o PWM usa 8 bits.'],
+      [16,'O <em>Duty Cycle</em> é o percentual de tempo em que a saída PWM permanece no nível alto (1);',true,'Correto — o slide define: "Microcontrolador controla o percentual de tempo da saída no nível 1; O percentual é chamado de ciclo de trabalho, ou Duty Cycle".'],
+      [32,'Na arquitetura Harvard do ATMega328P, a instrução ocupa 16 bits (palavra de programa) enquanto a palavra de dados é de 8 bits;',true,'Correto — o slide confirma: "Tamanho que contém uma instrução (16 bits) pode ser diferente da palavra de dados (8 bits)". Isso é uma característica distintiva da arquitetura Harvard.']
+    ]},
+  { n:4,
+    title:'A <strong>manipulação direta de registradores</strong> no ATMega328P (DDRx, PORTx, PINx) permite controle fino dos GPIOs. Some as afirmativas corretas:',
+    opts:[
+      [1,'O registrador DDRx define a direção de cada pino: valor 0 configura como entrada e valor 1 como saída;',true,'Correto — o slide afirma: "O registrador DDR determina quais são os pinos que serão utilizados como entrada (valor 0) ou saída (valor 1)".'],
+      [2,'Para ler o estado atual de um pino digital, utiliza-se o registrador PORTx;',false,'Incorreto — PORTx é usado para ESCRITA (e ativação do pull-up). Para LEITURA usa-se o PINx. Confundir os dois produz comportamento completamente errado, e o código compila sem erro algum.'],
+      [4,'Quando o pino está configurado como entrada, escrever 1 no bit correspondente do PORTx ativa o resistor interno de pull-up;',true,'Correto — o slide descreve: "O registrador PORT determina, no caso de entrada, habilita o resistor interno de PullUp (1), ou desabilita (0)".'],
+      [8,'A operação |= (OU com atribuição) sobre um registrador zera todos os bits não indicados na operação;',false,'Incorreto — |= apenas ATIVA os bits indicados, SEM alterar os demais. Zerar bits não mencionados é o que acontece com atribuição direta (ex.: PORTD = 0b00100000). Por isso, |= é preferida para modificar bits individualmente.'],
+      [16,'A Porta B do ATMega328P (DDRB, PORTB, PINB) corresponde aos pinos digitais 8 a 13 do Arduíno Uno;',true,'Correto — as aulas confirmam: "Porta B (DDRB, PORTB, PINB): pinos digitais 8 a 13".'],
+      [32,'A expressão <code>~(1 &lt;&lt; bit)</code> cria uma máscara com todos os bits em 1 exceto no indicado, sendo usada com AND (&amp;=) para zerar um bit específico sem alterar os demais;',true,'Correto — essa é a operação de clear/reset de bit: DDRD = ~(1 &lt;&lt; pinoLed) &amp; DDRD. O NOT (~) inverte o 1 solitário para 0, com todos os outros bits em 1; o AND preserva os demais e zera apenas o alvo.']
+    ]},
+  { n:5,
+    title:'<strong>Interrupções, Timers e WDT</strong> no ATMega328P. Some as afirmativas corretas:',
+    opts:[
+      [1,'Ao ocorrer uma interrupção, a execução do sketch é desviada para a ISR (<em>Interrupt Service Routine</em>) correspondente; ao término da ISR, a execução retorna ao ponto original;',true,'Correto — o slide descreve: "Provocam o desvio de execução do sketch para uma Interrupt Service Routine (ISR) específica. Ao término da ISR, a execução retorna ao ponto original".'],
+      [2,'No ATMega328P, interrupções só podem ser acionadas por eventos externos — sinais físicos nos pinos INT0 e INT1;',false,'Incorreto — o slide afirma: "Podem ser acionadas por eventos internos (ex. timers) ou externos (ex. sinais elétricos)". Há diversas fontes de interrupção interna, incluindo os três timers.'],
+      [4,'O <em>prescaler</em> permite dividir a frequência do clock do sistema por valores pré-definidos, reduzindo a velocidade de contagem dos timers;',true,'Correto — o slide descreve: "O clock pode ser dividido por valores pré-definidos (prescaler)". Isso permite adaptar a taxa de contagem do timer ao período desejado.'],
+      [8,'O Timer 1 do ATMega328P é de 8 bits, com contagem máxima de 255;',false,'Incorreto — o Timer 1 é de 16 bits (contagem de 0 a 65.535). Os Timers 0 e 2 é que são de 8 bits (0 a 255). O slide apresenta a tabela com essa distinção.'],
+      [16,'O WDT (<em>Watch Dog Timer</em>) usa um clock independente e reinicializa o MCU quando o software não envia periodicamente o sinal de reset esperado;',true,'Correto — o slide descreve: "Contador baseado em clock independente; Ao atingir contagem determinada, envia sinal de RESET ao MCU; MCU evita o RESET enviando ele mesmo um sinal de RESET para o WDT. Diante da eventual falha (travamento), o WDT reinicializa o MCU".'],
+      [32,'Com clock de 16 MHz e prescaler de 256, o Timer 1 precisa contar 62.500 ciclos para gerar uma interrupção exatamente a cada segundo;',true,'Correto — o slide calcula: "16.000.000 / 256 = 62.500 ⇒ válido (escolhido)!". Prescaler = 256; o registrador comparador é carregado com 62.500.']
+    ]}
+];
+
+const CHECK='<svg viewBox="0 0 24 24"><polyline points="4 13 9 18 20 6"/></svg>';
+const STORE='se_sim_p2_v1';
+const N_Q=QUESTIONS.length;
+const Q_VAL=10/N_Q;
+let saved={}; try{saved=JSON.parse(localStorage.getItem(STORE)||'{}')}catch(e){saved={}}
+const exam=document.getElementById('exam');
+const correctSum={};
+
+QUESTIONS.forEach(q=>{
+  const card=document.createElement('section'); card.className='q'; card.id='q'+q.n;
+  let cs=0; q.opts.forEach(o=>{ if(o[2]) cs+=o[0]; }); correctSum[q.n]=cs;
+  let optsHTML='';
+  q.opts.forEach(o=>{
+    const [bit,txt,ok,expl]=o; const id=`q${q.n}_${bit}`;
+    const chk=(saved['q'+q.n]||[]).includes(bit)?'checked':'';
+    optsHTML+=`
+      <li class="opt" id="opt_${id}">
+        <input type="checkbox" id="${id}" data-q="${q.n}" data-bit="${bit}" data-ok="${ok?1:0}" ${chk}>
+        <label for="${id}">
+          <span class="checkbox">${CHECK}</span>
+          <span class="bit">${String(bit).padStart(2,'0')}</span>
+          <span class="opt-txt">${txt}</span>
+          <span class="status" id="stat_${id}"></span>
+        </label>
+        <div class="expl">
+          <span class="verdict ${ok?'v-true':'v-false'}">${ok?'Correta · soma':'Incorreta · não soma'}</span>
+          <div style="margin-top:5px">${expl}</div>
+        </div>
+      </li>`;
+  });
+  card.innerHTML=`
+    <div class="q-head"><div class="q-num">${q.n}</div><div class="q-title">${q.title}</div></div>
+    <ul class="opts">${optsHTML}</ul>
+    <div class="q-foot">
+      <div class="foot-btns">
+        <button class="btn clearbtn" data-clear="${q.n}">Limpar</button>
+        <button class="btn checkbtn" data-check="${q.n}">Conferir</button>
+      </div>
+      <div class="sum-box">
+        <span class="sum-label">Sua soma</span>
+        <span class="sum-val" id="sum${q.n}">0</span>
+        <span class="correct-sum" id="csum${q.n}"></span>
+      </div>
+      <div class="score-box">
+        <span class="score-label">Pontos</span>
+        <span class="score-val" id="sv${q.n}">—</span>
+        <span class="score-max">/ ${Q_VAL.toFixed(2)}</span>
+      </div>
+    </div>`;
+  exam.appendChild(card);
+});
+
+const sheet=document.getElementById('sheet');
+const firstBtn=document.getElementById('revealAll');
+QUESTIONS.forEach(q=>{
+  const c=document.createElement('div'); c.className='cell'; c.id='cell'+q.n;
+  c.innerHTML=`<span class="c-q">Q${q.n}</span><span class="c-v" id="cv${q.n}">—</span>`;
+  sheet.insertBefore(c,firstBtn);
+});
+const gCell=document.createElement('div'); gCell.className='grade-cell'; gCell.id='gradeCell';
+gCell.innerHTML='<span class="g-lbl">Nota Final</span><span class="g-val" id="gradeVal">—</span><span class="g-sub" id="gradeSub"></span>';
+sheet.insertBefore(gCell,firstBtn);
+
+function calcQuestionScore(qn){
+  const q=QUESTIONS.find(x=>x.n===+qn);
+  const nCorrect=q.opts.filter(o=>o[2]).length;
+  const perCorrect=Q_VAL/nCorrect;
+  let hit=0,extra=0;
+  document.querySelectorAll(`input[data-q="${qn}"]`).forEach(b=>{
+    if(b.checked&&b.dataset.ok==='1') hit++;
+    if(b.checked&&b.dataset.ok==='0') extra++;
+  });
+  return Math.max(0,hit-extra)*perCorrect;
+}
+
+function updateGrade(){
+  let total=0,nRevealed=0;
+  QUESTIONS.forEach(q=>{
+    if(document.getElementById('q'+q.n).classList.contains('revealed')){
+      nRevealed++; total+=calcQuestionScore(q.n);
+    }
+  });
+  if(nRevealed===0) return;
+  document.getElementById('gradeVal').textContent=total.toFixed(1);
+  document.getElementById('gradeSub').textContent=nRevealed===N_Q?'/ 10':'/ 10 (parcial)';
+}
+
+function recalc(qn){
+  let sum=0; const picked=[];
+  document.querySelectorAll(`input[data-q="${qn}"]`).forEach(b=>{
+    if(b.checked){sum+=+b.dataset.bit;picked.push(+b.dataset.bit);}});
+  document.getElementById('sum'+qn).textContent=sum;
+  const cell=document.getElementById('cell'+qn);
+  document.getElementById('cv'+qn).textContent=picked.length?sum:'—';
+  cell.classList.toggle('filled',picked.length>0);
+  saved['q'+qn]=picked; try{localStorage.setItem(STORE,JSON.stringify(saved))}catch(e){}
+  if(document.getElementById('q'+qn).classList.contains('revealed')) markCell(qn);
+}
+
+function reveal(qn){
+  const card=document.getElementById('q'+qn); card.classList.add('revealed');
+  document.querySelectorAll(`input[data-q="${qn}"]`).forEach(b=>{
+    const id=b.id, ok=b.dataset.ok==='1', li=document.getElementById('opt_'+id),
+          st=document.getElementById('stat_'+id);
+    li.classList.toggle('should',ok); li.classList.toggle('shouldnt',!ok);
+    st.className='status';
+    if(ok&&b.checked){st.classList.add('st-hit');st.textContent='✓ acertou';}
+    else if(ok&&!b.checked){st.classList.add('st-miss');st.textContent='✗ faltou';}
+    else if(!ok&&b.checked){st.classList.add('st-extra');st.textContent='✗ a mais';}
+    else{st.classList.add('st-ok');st.textContent='ok';}
+  });
+  const cs=correctSum[qn], el=document.getElementById('csum'+qn);
+  el.innerHTML=`· correta: <b>${cs}</b>`;
+  markCell(qn);
+  const score=calcQuestionScore(qn);
+  const sv=document.getElementById('sv'+qn);
+  sv.textContent=score.toFixed(2);
+  sv.classList.toggle('bad', score < Q_VAL/2);
+  updateGrade();
+}
+function markCell(qn){
+  const userSum=+document.getElementById('sum'+qn).textContent;
+  const match=userSum===correctSum[qn];
+  document.getElementById('cell'+qn).classList.toggle('match',match);
+  document.getElementById('csum'+qn).classList.toggle('bad',!match);
+}
+
+document.addEventListener('change',e=>{if(e.target.matches('input[type=checkbox]'))recalc(e.target.dataset.q)});
+document.addEventListener('click',e=>{
+  if(e.target.matches('[data-clear]')){const qn=e.target.dataset.clear;
+    document.querySelectorAll(`input[data-q="${qn}"]`).forEach(b=>b.checked=false);recalc(qn);}
+  if(e.target.matches('[data-check]'))reveal(e.target.dataset.check);
+  if(e.target.id==='revealAll')QUESTIONS.forEach(q=>reveal(q.n));
+});
+QUESTIONS.forEach(q=>recalc(q.n));
+</script>
+</body>
+</html>

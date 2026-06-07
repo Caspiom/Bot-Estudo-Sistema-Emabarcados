@@ -1,5 +1,23 @@
+import random
+
 from core.ui import C, ask, pause, cls, hr, barra, resultado_sessao, selecionar_opcao, selecionar_multiplas
 from data.topicos import TOPICOS
+
+
+def _shuffle_opcoes(opcoes, resposta):
+    """Embaralha as opções e retorna (opcoes_novas, resposta_nova).
+    Mantém o gabarito correto apesar da nova ordem."""
+    textos = [op.split(') ', 1)[1] if ') ' in op else op for op in opcoes]
+    letras_orig = [chr(ord('A') + i) for i in range(len(textos))]
+    pares = list(zip(letras_orig, textos))
+    random.shuffle(pares)
+    novas = [f"{chr(ord('A') + i)}) {txt}" for i, (_, txt) in enumerate(pares)]
+    if isinstance(resposta, list):
+        corretas = set(resposta)
+        nova_resp = sorted(chr(ord('A') + i) for i, (lo, _) in enumerate(pares) if lo in corretas)
+    else:
+        nova_resp = next(chr(ord('A') + i) for i, (lo, _) in enumerate(pares) if lo == resposta)
+    return novas, nova_resp
 
 
 def _aviso_ia(q):
@@ -23,13 +41,14 @@ def cabecalho_questao(q, n, total):
 
 def exec_mc(q):
     print()
-    idx = selecionar_opcao(q["opcoes"])
+    opcoes, resposta = _shuffle_opcoes(q["opcoes"], q["resposta"])
+    idx = selecionar_opcao(opcoes)
     letter = chr(ord('A') + idx)
-    acertou = letter == q["resposta"]
+    acertou = letter == resposta
     if acertou:
         print(f"\n  {C.GREEN}{C.BOLD}✅ CORRETO!{C.RESET}")
     else:
-        print(f"\n  {C.RED}{C.BOLD}❌ Incorreto. Resposta: {q['resposta']}{C.RESET}")
+        print(f"\n  {C.RED}{C.BOLD}❌ Incorreto. Resposta: {resposta}{C.RESET}")
     print(f"\n  {C.CYAN}💡 {q['explicacao']}{C.RESET}")
     _aviso_ia(q)
     return acertou
@@ -38,9 +57,9 @@ def exec_mc(q):
 def exec_multi(q):
     """Múltiplas alternativas corretas — checkboxes."""
     print(f"\n  {C.YELLOW}Marque todas as alternativas corretas:{C.RESET}\n")
-    indices = selecionar_multiplas(q["opcoes"])
+    opcoes, corretas = _shuffle_opcoes(q["opcoes"], q["resposta"])
+    indices = selecionar_multiplas(opcoes)
     letras = [chr(ord('A') + i) for i in indices]
-    corretas = sorted(q["resposta"])
     acertou = sorted(letras) == corretas
     marcadas = ", ".join(letras) if letras else f"{C.DIM}(nenhuma){C.RESET}"
     print(f"\n  Marcadas: {C.BOLD}{marcadas}{C.RESET}")

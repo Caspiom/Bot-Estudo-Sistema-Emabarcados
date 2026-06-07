@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulado P2-C · Sistemas Embarcados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Spline+Sans+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4efe6;--paper-2:#fbf8f1;--ink:#23211d;--ink-soft:#56514a;
+    --line:#d8cfbf;--red:#a8331f;--red-soft:#c75a44;--green:#3f6b4a;
+    --green-soft:#e4efe2;--accent:#1f3a4d;--amber:#9a6b1e;--shadow:rgba(40,32,20,.13);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Spectral',Georgia,serif;
+    background:radial-gradient(circle at 12% -5%,#fbf8f1 0%,transparent 45%),
+      radial-gradient(circle at 95% 5%,#efe7d8 0%,transparent 40%),var(--paper);
+    color:var(--ink);line-height:1.55;padding:0 0 150px;-webkit-font-smoothing:antialiased;}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");opacity:.6}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px;position:relative;z-index:1}
+  header{padding:56px 0 32px;text-align:center;border-bottom:2px solid var(--ink)}
+  .tag{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:.7rem;
+    letter-spacing:.32em;text-transform:uppercase;color:var(--red);
+    border:1.5px solid var(--red);padding:5px 14px;border-radius:2px;margin-bottom:18px}
+  header h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(2rem,5.5vw,3.2rem);line-height:1.02;letter-spacing:-.01em}
+  header .sub{font-style:italic;color:var(--ink-soft);margin-top:10px;font-size:1.05rem}
+  header .meta{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-top:16px}
+  .rules{margin:24px auto 0;max-width:700px;font-size:.92rem;color:var(--ink-soft);
+    background:var(--paper-2);border:1px solid var(--line);border-left:3px solid var(--red);
+    padding:14px 18px;border-radius:4px;text-align:left}
+  .rules b{color:var(--ink)}
+  .q{margin-top:38px;background:var(--paper-2);border:1px solid var(--line);
+    border-radius:8px;box-shadow:0 14px 34px -22px var(--shadow);overflow:hidden}
+  .q-head{display:flex;gap:16px;align-items:flex-start;padding:24px 26px 18px;border-bottom:1px dashed var(--line)}
+  .q-num{flex:0 0 auto;font-family:'Fraunces',serif;font-weight:900;font-size:1.5rem;
+    color:var(--paper-2);background:var(--accent);width:46px;height:46px;border-radius:50%;
+    display:grid;place-items:center;line-height:1;box-shadow:0 4px 0 rgba(31,58,77,.25)}
+  .q-title{font-size:1.02rem}
+  .q-title strong{font-family:'Fraunces',serif;font-weight:600}
+  .q-title em{color:var(--accent)}
+  ul.opts{list-style:none;padding:8px 18px 14px}
+  li.opt{position:relative;border-radius:6px;transition:background .2s}
+  li.opt label{display:flex;gap:14px;align-items:flex-start;cursor:pointer;padding:13px 14px;border-radius:6px;transition:background .15s}
+  li.opt label:hover{background:rgba(31,58,77,.05)}
+  .checkbox{flex:0 0 auto;width:24px;height:24px;border:2px solid var(--line);border-radius:6px;
+    background:#fff;display:grid;place-items:center;margin-top:1px;transition:.15s}
+  .checkbox svg{width:15px;height:15px;stroke:#fff;stroke-width:3.5;fill:none;stroke-dasharray:24;stroke-dashoffset:24;transition:stroke-dashoffset .2s}
+  input[type=checkbox]{position:absolute;opacity:0;width:0;height:0}
+  input:checked+label .checkbox{background:var(--green);border-color:var(--green)}
+  input:checked+label .checkbox svg{stroke-dashoffset:0}
+  input:focus-visible+label .checkbox{outline:2px solid var(--accent);outline-offset:2px}
+  .bit{flex:0 0 auto;font-family:'Spline Sans Mono',monospace;font-weight:600;font-size:.8rem;
+    color:var(--red);background:rgba(168,51,31,.09);border:1px solid rgba(168,51,31,.25);
+    padding:2px 8px;border-radius:4px;margin-top:2px;min-width:34px;text-align:center}
+  input:checked+label .bit{background:var(--red);color:#fff;border-color:var(--red)}
+  .opt-txt{font-size:.96rem;color:var(--ink)}
+  .expl{display:none;margin:0 14px 10px 52px;font-size:.88rem;color:var(--ink-soft);
+    border-left:3px solid var(--line);padding:7px 12px;background:rgba(0,0,0,.018);border-radius:0 6px 6px 0}
+  .expl .verdict{font-family:'Spline Sans Mono',monospace;font-weight:600;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;margin-right:8px}
+  .expl .v-true{color:var(--green)}.expl .v-false{color:var(--red)}
+  .revealed .expl{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(-3px)}to{opacity:1}}
+  .revealed li.opt.should{background:var(--green-soft)}
+  .revealed li.opt.shouldnt{background:#f7e9e5}
+  .status{font-family:'Spline Sans Mono',monospace;font-size:.68rem;letter-spacing:.06em;
+    margin-left:auto;align-self:center;padding:3px 9px;border-radius:20px;white-space:nowrap}
+  .st-hit{background:var(--green);color:#fff}
+  .st-miss{background:var(--red);color:#fff}
+  .st-extra{background:var(--red);color:#fff}
+  .st-ok{background:rgba(0,0,0,.06);color:var(--ink-soft)}
+  .revealed .checkbox{display:none}
+  .q-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    padding:16px 26px;background:linear-gradient(var(--paper-2),#f1eadd);border-top:1px solid var(--line)}
+  .sum-box{display:flex;align-items:baseline;gap:10px}
+  .sum-label{font-family:'Spline Sans Mono',monospace;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft)}
+  .sum-val{font-family:'Fraunces',serif;font-weight:900;font-size:2.1rem;color:var(--red);line-height:1;min-width:40px}
+  .correct-sum{display:none;font-family:'Spline Sans Mono',monospace;font-size:.78rem;color:var(--ink-soft);align-self:center}
+  .correct-sum b{font-family:'Fraunces',serif;font-size:1.15rem;color:var(--green)}
+  .correct-sum.bad b{color:var(--red)}
+  .revealed .correct-sum{display:inline}
+  .score-box{display:none;align-items:baseline;gap:8px}
+  .score-label{font-family:'Spline Sans Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
+  .score-val{font-family:'Fraunces',serif;font-weight:900;font-size:1.8rem;line-height:1;color:var(--green)}
+  .score-val.bad{color:var(--red)}
+  .score-max{font-family:'Spline Sans Mono',monospace;font-size:.76rem;color:var(--ink-soft);align-self:flex-end;padding-bottom:3px}
+  .revealed .score-box{display:flex}
+  .grade-cell{display:flex;flex-direction:column;align-items:center;background:rgba(63,107,74,.22);border:1.5px solid #6fa07c;border-radius:6px;padding:5px 16px;min-width:90px}
+  .grade-cell .g-lbl{font-family:'Spline Sans Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:#a8d8b0}
+  .grade-cell .g-val{font-family:'Fraunces',serif;font-weight:900;font-size:1.5rem;color:#bfe6c8;line-height:1.2}
+  .grade-cell .g-sub{font-family:'Spline Sans Mono',monospace;font-size:.58rem;color:#6fa07c;letter-spacing:.06em}
+  .foot-btns{display:flex;gap:8px}
+  .btn{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.08em;
+    text-transform:uppercase;padding:8px 15px;border-radius:5px;cursor:pointer;border:1.5px solid;transition:.15s}
+  .clearbtn{background:none;border-color:var(--line);color:var(--ink-soft)}
+  .clearbtn:hover{border-color:var(--red);color:var(--red)}
+  .checkbtn{background:var(--accent);border-color:var(--accent);color:#fff}
+  .checkbtn:hover{background:#16384c}
+  .sheet{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(35,33,29,.97);
+    backdrop-filter:blur(8px);color:var(--paper);border-top:2px solid var(--red);box-shadow:0 -10px 30px rgba(0,0,0,.25)}
+  .sheet-inner{max-width:880px;margin:0 auto;padding:11px 22px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:center}
+  .sheet-title{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:#c9c0b3;margin-right:4px}
+  .cell{display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:5px 12px;min-width:54px}
+  .cell .c-q{font-family:'Spline Sans Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:#a89e8f}
+  .cell .c-v{font-family:'Fraunces',serif;font-weight:900;font-size:1.2rem;color:#fff}
+  .cell.filled{background:rgba(168,51,31,.22);border-color:var(--red-soft)}
+  .cell.filled .c-v{color:#ffb9a8}
+  .cell.match{background:rgba(63,107,74,.32);border-color:#6fa07c}
+  .cell.match .c-v{color:#bfe6c8}
+  .sheet .btn{margin-left:5px}
+  .revealbtn{background:var(--red);border-color:var(--red);color:#fff}
+  .revealbtn:hover{background:var(--red-soft)}
+  .printbtn{background:none;border-color:rgba(255,255,255,.3);color:#e9e2d4}
+  .printbtn:hover{border-color:#fff}
+  footer{text-align:center;margin-top:44px;font-family:'Spline Sans Mono',monospace;font-size:.68rem;letter-spacing:.12em;color:var(--ink-soft)}
+  @media print{body{background:#fff;padding-bottom:0}.sheet,.foot-btns,.tag{display:none}
+    .q{box-shadow:none;break-inside:avoid}.revealed .checkbox{display:grid}}
+  @media(max-width:560px){.sum-val{font-size:1.7rem}.status{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="tag">SE · UCSAL · P2-C</span>
+    <h1>Sistemas Embarcados</h1>
+    <p class="sub">Simulado Completo — 2ª Avaliação · 10 Questões</p>
+    <p class="meta">Prof. Marco Antônio C. Câmara · Gabarito comentado</p>
+    <div class="rules">
+      Marque as afirmativas corretas — a <b>soma</b> é calculada automaticamente. Use <b>Conferir</b> em cada questão (ou <b>Conferir tudo</b>) para revelar o gabarito comentado e sua nota.
+    </div>
+  </header>
+  <main id="exam"></main>
+  <footer>Simulado P2-C · Sistemas Embarcados · UCSAL 2026</footer>
+</div>
+<div class="sheet">
+  <div class="sheet-inner" id="sheet">
+    <span class="sheet-title">Respostas</span>
+    <button class="btn revealbtn" id="revealAll">Conferir tudo</button>
+    <button class="btn printbtn" onclick="window.print()">Imprimir</button>
+  </div>
+</div>
+<script>
+const QUESTIONS = [
+  { n:1,
+    title:'<strong>Medição Analógica Básica.</strong> Sobre a leitura de entradas analógicas no Arduíno, some as afirmativas corretas:',
+    opts:[
+      [1,'Entradas analógicas desconectadas do Arduíno são "dominadas" pelo ruído, apresentando leituras instáveis e imprevisíveis;',true,'Correto — o slide descreve o resultado do experimento: "Entradas desconectadas são dominadas pelo ruído".'],
+      [2,'O ADC do Arduíno Uno possui resolução de 8 bits, correspondendo a 256 valores distintos (0 a 255);',false,'Incorreto — o ADC do Arduíno Uno possui 10 bits de resolução, correspondendo a 1024 valores distintos (0 a 1023). O slide afirma: "Conversor A/D de 10 bits (0~1023)".'],
+      [4,'Tensões negativas ou superiores a 5V na entrada analógica do Arduíno podem danificá-lo, pois não há proteção interna na entrada;',true,'Correto — o slide alerta: "Não há qualquer proteção da entrada, logo tensões negativas, ou superiores a 5V podem daniicar o Arduíno!"'],
+      [8,'A imprecisão nas medições analógicas afeta mais os valores nos extremos da escala (próximos a 0V e 5V) que os valores intermediários;',false,'Incorreto — é o oposto. O slide afirma: "A imprecisão costuma afetar mais os valores intermediários de uma escala". No experimento, os efeitos apareceram mais na medição de 3,3V.'],
+      [16,'O número de casas decimais representáveis em uma medição depende diretamente da resolução do ADC, não apenas de uma escolha do programador;',true,'Correto — o slide afirma: "O número de casas decimais não é só uma escolha; ele depende diretamente da resolução".'],
+      [32,'Com o ADC de 10 bits do Arduíno e referência de 5V, cada contagem corresponde a aproximadamente 4,89 mV (5V ÷ 1023);',true,'Correto — o slide calcula: "São 4,89mV entre dois valores (5V / 1023)". Com referência de 1,1V essa resolução cai para ~1mV.']
+    ]},
+  { n:2,
+    title:'<strong>Precisão e Exatidão.</strong> Some as afirmativas corretas:',
+    opts:[
+      [1,'Precisão e exatidão são conceitos distintos: uma medição pode ser muito precisa sem ser exata, e vice-versa;',true,'Correto — o slide ilustra as quatro combinações: pouco preciso/pouco exato, muito preciso/pouco exato, pouco preciso/muito exato e muito preciso/muito exato.'],
+      [2,'Uma medição precisa retorna valores sempre muito próximos entre si em medições repetidas, mesmo que todos estejam afastados do valor real;',true,'Correto — o slide afirma: "Se o valor medido for fixo, medições precisas retornarão valores sempre muito próximos; Ou seja, para valores fixos, a medição será estável, mesmo que errada".'],
+      [4,'Quando o erro é causado por ruído aleatório, a média dos valores medidos tende a ser muito próxima do valor real, mesmo com imprecisão;',true,'Correto — o slide afirma: "Muitas vezes medições exatas perdem precisão devido à presença de erros aleatórios. Nestes casos, a média dos valores medidos é muito próxima do valor real".'],
+      [8,'Exatidão é definida como a capacidade de obter sempre o mesmo resultado em medições repetidas do mesmo valor;',false,'Incorreto — essa é a definição de PRECISÃO, não de exatidão. Exatidão se refere a quão próximo do valor real está a medição.'],
+      [16,'A exatidão pode ser expressa como percentual — ex.: ±(2%+2) com leitura de 10,0 significa que o valor real está entre 9,78 e 10,22;',true,'Correto — o slide exemplifica: "A exatidão é um percentual. Ex.: ± (2% + 2) significa 2% de exatidão + 2. Se estiver lendo 10,0, o valor pode estar entre 9,78 e 10,22".'],
+      [32,'Precisão, exatidão e linearidade são características exclusivas de medições digitais, não afetando instrumentos analógicos ou medições manuais;',false,'Incorreto — o slide é explícito: "Nenhum destes parâmetros tem relação obrigatória com medições digitais! Qualquer tipo de medida, inclusive com instrumentos analógicos ou manuais, é afetada pela precisão, exatidão e linearidade".']
+    ]},
+  { n:3,
+    title:'<strong>Linearidade e Fatores de Medição.</strong> Some as afirmativas corretas:',
+    opts:[
+      [1,'A não-linearidade provoca erros em parte dos pontos avaliados e é mais comum nos extremos da faixa de valores mensuráveis;',true,'Correto — o slide afirma: "A não-linearidade provoca erros de medição em parte dos pontos avaliados; É comum encontrar a não-linearidade nos extremos da faixa de valores mensuráveis".'],
+      [2,'Em algumas situações, limitar a faixa de valores medidos permite evitar a região não-linear, embora isso reduza a resolução disponível;',true,'Correto — o slide afirma: "Em algumas situações, pode valer a pena limitar a faixa de valores medidos, e com isso a resolução".'],
+      [4,'Referência, ruídos e escala são fatores universais que afetam qualquer tipo de medição — digital, analógica ou manual;',true,'Correto — o slide os classifica como "Fatores Universais: Referência, Ruídos, Escala", em contraste com os fatores específicos de medições digitais.'],
+      [8,'Os únicos fatores que afetam medições digitais são resolução e taxa de amostragem — referência e ruído são exclusivos de medições analógicas;',false,'Incorreto — referência, ruídos e escala são "Fatores Universais" que afetam QUALQUER tipo de medição. O slide lista resolução e taxa de amostragem apenas como fatores adicionais específicos de medições digitais.'],
+      [16,'A taxa de amostragem e a resolução são fatores específicos de medições digitais, sem equivalente direto em medições analógicas;',true,'Correto — o slide os classifica como "Fatores em Medições Digitais: Resolução, Taxa de Amostragem", separados dos fatores universais.'],
+      [32,'Referência, ruídos e escala afetam exclusivamente medições digitais automatizadas, não impactando instrumentos analógicos ou medições manuais;',false,'Incorreto — são "Fatores Universais". O slide é explícito: "Qualquer tipo de medida, inclusive com instrumentos analógicos ou manuais, é afetada" por esses fatores.']
+    ]},
+  { n:4,
+    title:'<strong>Escalas e Resolução do ADC.</strong> Some as afirmativas corretas:',
+    opts:[
+      [1,'Escalas devem ser dimensionadas para que o sinal do sensor ocupe toda a faixa de entrada do ADC, preservando a resolução máxima disponível;',true,'Correto — o slide afirma: "Devem ser dimensionadas para manter a resolução máxima".'],
+      [2,'Conectar um sensor com saída de 0 a 2,5V a um ADC com entrada de 0 a 5V sem ajuste de escala causa perda de metade da resolução disponível;',true,'Correto — o slide ilustra exatamente esse caso com o label "Resolução perdida": o sensor usa apenas a metade inferior da escala do ADC.'],
+      [4,'Com referência de 5V e ADC de 10 bits a resolução é ~4,89 mV por contagem; trocando para referência interna de 1,1V a resolução melhora para ~1 mV por contagem;',true,'Correto — o slide calcula: "5V/1023 = 4,89mV"; e "Com a referência de 1,1V, teríamos 1mV. Isso implicaria em 4 dígitos, ou 1100 contagens".'],
+      [8,'Ao conectar um sensor de 0 a 2,5V em um ADC de 0 a 5V, o conversor detecta automaticamente a faixa do sensor e ajusta a resolução sem perda;',false,'Incorreto — o ADC não faz ajuste automático. O slide mostra claramente que nesse caso há "Resolução perdida", pois o ADC permanece com escala de 0 a 5V.'],
+      [16,'Para medir temperaturas de 0,0°C a 100,0°C com resolução de 0,5°C (201 valores distintos), é necessário um ADC de pelo menos 8 bits;',true,'Correto — 2⁷ = 128 < 201 (insuficiente); 2⁸ = 256 ≥ 201 (suficiente). O slide usa o mesmo raciocínio: "421 valores; 2⁹ = 512 → são 9 bits".'],
+      [32,'As entradas analógicas do Arduíno Uno possuem proteção interna contra sobretensão, suportando tensões de entrada de até 12V sem risco de dano;',false,'Incorreto — o slide afirma o contrário: "Não há qualquer proteção da entrada, logo tensões negativas, ou superiores a 5V podem daniicar o Arduíno!"']
+    ]},
+  { n:5,
+    title:'<strong>ADC — Arquitetura e Amostragem.</strong> Some as afirmativas corretas:',
+    opts:[
+      [1,'Na arquitetura paralela (flash) do ADC, um divisor resistivo divide a referência em intervalos que são comparados com a entrada por "n" comparadores simultâneos;',true,'Correto — o slide descreve: "Um divisor resistivo divide a tensão de referência máxima em intervalos; As saídas do divisor resistivo são comparadas com o valor da entrada analógica através de n comparadores".'],
+      [2,'A arquitetura paralela é a mais indicada para altas resoluções, pois utiliza muitos comparadores em paralelo tornando o processo mais preciso;',false,'Incorreto — o slide afirma: "A arquitetura é rápida (tempo real), mas sua complexidade é muito grande para resoluções maiores". Para alta resolução usam-se Pipeline, SAR e Sigma-Delta.'],
+      [4,'O teorema de Nyquist exige frequência de amostragem de pelo menos o dobro da maior componente de frequência do sinal para representá-lo adequadamente;',true,'Correto — o slide afirma: "O teorema de Nyquist diz que... uma frequência de amostragem pelo menos 2 vezes superior à maior componente de frequência do sinal é capaz de representar adequadamente o sinal original".'],
+      [8,'Sinais digitais podem exigir frequências de amostragem muito elevadas devido às suas componentes harmônicas;',true,'Correto — o slide afirma: "Sinais digitais, devido às suas harmônicas, podem ter frequências de amostragem ideais muito elevadas".'],
+      [16,'Um voltímetro típico possui taxa de amostragem de ~4 SA/s, enquanto um osciloscópio opera em ~1 GSA/s;',true,'Correto — o slide cita: "Um voltímetro tem taxa típica de 4 SA/s; Um osciloscópio tem taxa típica de 1 GSA/s".'],
+      [32,'O filtro de ruído analógico presente no ADC do Arduíno Uno é mais eficiente para ruídos de baixa frequência;',false,'Incorreto — o slide afirma o contrário: "O filtro é mais eficiente para ruídos de frequência mais alta".']
+    ]},
+  { n:6,
+    title:'<strong>DAC — Tipos, Parâmetros e PWM.</strong> Some as afirmativas corretas:',
+    opts:[
+      [1,'Existem basicamente dois tipos de DAC: por resistores ponderados e por rede R-2R em escada;',true,'Correto — o slide afirma: "Existem basicamente 2 tipos de DAC: DAC por Resistores Ponderados; DAC por Rede R-2R em escada".'],
+      [2,'A principal vantagem do DAC por rede R-2R é usar apenas dois valores de resistência, facilitando a construção e a precisão;',true,'Correto — o slide afirma: "A vantagem clara está nos dois únicos valores para os resistores, facilitando a construção".'],
+      [4,'O Arduíno Uno R3 possui DAC integrado, permitindo saída analógica real sem necessidade de PWM;',false,'Incorreto — o slide afirma diretamente: "O Arduíno Uno não possui DAC integrado".'],
+      [8,'O tempo de acomodação de um DAC é o tempo necessário para a saída representar uma mudança entre o menor e o maior valor binário na entrada;',true,'Correto — o slide define: "Tempo de acomodação: tempo necessário para a saída representar uma mudança entre o menor e maior valor binário na entrada".'],
+      [16,'A monotonicidade de um DAC indica que a saída cresce de forma constante e ordenada conforme o valor digital da entrada aumenta;',true,'Correto — o slide define: "Monotonicidade: crescimento constante".'],
+      [32,'O DAC por resistores ponderados é preferível para muitos bits pois usa um único valor de resistência, simplificando o projeto;',false,'Incorreto — o DAC por resistores ponderados tem "Complexidade associada à precisão dos resistores, especialmente para muitos dígitos". É o R-2R que usa apenas dois valores; os resistores ponderados variam com as potências de 2.']
+    ]},
+  { n:7,
+    title:'<strong>PWM e Memória do ATMega328P.</strong> Some as afirmativas corretas:',
+    opts:[
+      [1,'O PWM simula uma saída analógica controlando o percentual de tempo em que a saída permanece no nível alto — esse percentual é chamado de Duty Cycle;',true,'Correto — o slide define: "Microcontrolador controla o percentual de tempo da saída no nível 1; O percentual é chamado de ciclo de trabalho, ou Duty Cycle".'],
+      [2,'Em uma saída PWM com Duty Cycle de 50% e amplitude de 5V, a tensão média resultante é de aproximadamente 2,5V;',true,'Correto — o efeito analógico do PWM vem da tensão média. Com 50% do tempo em 5V e 50% em 0V, a média é 2,5V.'],
+      [4,'O ATMega328P utiliza a arquitetura Von Neumann, com uma única memória compartilhada para dados e instruções;',false,'Incorreto — o slide afirma: "O ATMega328P não segue a arquitetura padrão Von Neumann". Ele usa arquitetura Harvard, com memórias separadas para dados (SRAM) e instruções (Flash).'],
+      [8,'A memória Flash do ATMega328P tem 32KB, é não-volátil e armazena o sketch — o programa persiste mesmo sem energia;',true,'Correto — o slide confirma: "Flash (32 KB): onde fica o seu sketch, gravado pelo IDE Arduino. É memória não-volátil, persiste sem energia".'],
+      [16,'A SRAM do ATMega328P tem 2KB, é volátil e armazena variáveis locais, globais, a pilha (stack) e o heap durante a execução;',true,'Correto — o slide confirma: "SRAM (2 KB): memória de trabalho. Aqui ficam suas variáveis locais, globais, a pilha (stack) e o heap".'],
+      [32,'A EEPROM do ATMega328P, com vida útil de ~100.000 escritas, é ideal para armazenamento dentro de loops rápidos de execução;',false,'Incorreto — o slide alerta: "Tem vida útil de ~100.000 ciclos de escrita, não use dentro de um loop rápido". A EEPROM é para configurações e dados que mudam raramente.']
+    ]},
+  { n:8,
+    title:'<strong>Registradores DDRx, PORTx e PINx.</strong> Some as afirmativas corretas:',
+    opts:[
+      [1,'O registrador DDRx define a direção de cada pino: escrever 0 configura como entrada, escrever 1 configura como saída;',true,'Correto — o slide afirma: "O registrador DDR determina quais são os pinos que serão utilizados como entrada (valor 0) ou saída (valor 1)".'],
+      [2,'Atribuir um valor diretamente ao registrador inteiro (ex.: PORTD = 0b00100000) zera simultaneamente todos os bits que não foram mencionados na operação;',true,'Correto — o slide alerta: "Se você atribuísse um valor direto ao registrador inteiro, estaria zerando todos os outros bits da Porta D ao mesmo tempo". Por isso usa-se |= ou &=.'],
+      [4,'O registrador PINx pode ser escrito para forçar o estado de saída de um pino digital;',false,'Incorreto — PINx é somente leitura: "deve ser tratado apenas para leitura, possui o status atual de cada pino". Para escrever usa-se PORTx. Confundir os dois compila sem erro mas produz comportamento incorreto.'],
+      [8,'Acessar registradores diretamente (ex.: PORTD |= 1<<5) é muito mais rápido que usar digitalWrite(), executando em apenas um ciclo de clock;',true,'Correto — o slide afirma: "escrever direto no registrador leva um único ciclo" versus "centenas de ciclos de clock" do digitalWrite().'],
+      [16,'A Porta C do ATMega328P (DDRC, PORTC, PINC) corresponde aos pinos analógicos A0 a A5 do Arduíno Uno;',true,'Correto — o slide confirma: "Porta C (DDRC, PORTC, PINC): pinos analógicos A0 a A5".'],
+      [32,'A operação DDRD &amp;= ~(1 &lt;&lt; pinoLed) configura o pino indicado como saída no registrador DDRD;',false,'Incorreto — &amp;= ~(1&lt;&lt;bit) ZERA o bit correspondente no DDRx, o que configura o pino como ENTRADA (DDR=0). Para configurar como SAÍDA usa-se |= (setar o bit para 1).']
+    ]},
+  { n:9,
+    title:'<strong>Interrupções no ATMega328P.</strong> Some as afirmativas corretas:',
+    opts:[
+      [1,'A ISR (Interrupt Service Routine) deve ser construída com cuidados especiais e, sempre que possível, ser a menor possível para minimizar o impacto na execução principal;',true,'Correto — o slide afirma: "A ISR deve ser construída com alguns cuidados especiais" e "Objetivo é fazer ISR() o menor possível".'],
+      [2,'INT0 e INT1 são os únicos pinos do ATMega328P capazes de gerar interrupções externas — os demais pinos não suportam detecção de mudança de estado;',false,'Incorreto — além de INT0 e INT1, o ATMega328P possui PCINT0, PCINT1 e PCINT2, que detectam mudança de estado em grupos de pinos das portas B, C e D respectivamente.'],
+      [4,'Além das interrupções externas, o ATMega328P suporta interrupções internas de timers, ADC, USART, EEPROM e comparador analógico;',true,'Correto — a tabela de vetores do slide lista: TIMER (0, 1 e 2), ADC, EE READY, ANALOG COMP, TWI, USART, SPI, entre outros.'],
+      [8,'O ATMega328P possui três timers (0, 1 e 2), cada um com pelo menos duas funções de comparação e uma de overflow;',true,'Correto — o slide afirma: "alguns deles estão associados a 3 diferentes timers (0, 1 e 2); Em todos há 2 funções de comparação, e uma de overflow".'],
+      [16,'A função sei() habilita as interrupções globais no ATMega328P, sendo necessária para que qualquer ISR configurada possa ser executada;',true,'Correto — o slide mostra: "Também é importante habilitar as interrupções: sei()".'],
+      [32,'No modo CTC, a ISR deve zerar manualmente o registrador TCNT1 a cada interrupção para reiniciar a contagem do timer;',false,'Incorreto — no modo CTC o "timer1 zera ao alcançar registro A" automaticamente. O slide mostra exatamente que a ISR no modo CTC pode ser ainda menor por não precisar do reset manual.']
+    ]},
+  { n:10,
+    title:'<strong>Timers — Prescaler, OCR e Configuração.</strong> Some as afirmativas corretas:',
+    opts:[
+      [1,'Com clock de 16 MHz e prescaler de 256, o timer1 precisa contar exatamente 62.500 ciclos para gerar uma interrupção a cada segundo;',true,'Correto — o slide calcula: "16.000.000 / 256 = 62.500 ⇒ válido (escolhido)!" com Prescaler = 256 e Contador = 62.500.'],
+      [2,'O Timer 1 do Arduíno Uno interfere nas funções millis() e delay(), portanto não deve ser reconfigurado em projetos que usam essas funções;',false,'Incorreto — o slide afirma: "O timer 1 não afeta millis()". É o Timer 0 que está associado a delay(), millis() e micros(). Embora o TCCR1A precise de reset por ser usado para PWM, isso é diferente de "afetar millis()".'],
+      [4,'O Timer 0 é de 8 bits e é responsável pelas funções delay(), millis() e micros(), além do analogWrite() nos pinos 5 e 6;',true,'Correto — o slide confirma na tabela: "Timer 0 (8 bits, 0~255): delay(), millis(), micros(); analogWrite() pinos 5 e 6".'],
+      [8,'No modo CTC, o contador do timer é zerado automaticamente ao atingir o valor do registro de comparação, sem necessidade de código adicional na ISR;',true,'Correto — o slide descreve: "Modo CTC pode ser habilitado; timer1 zera ao alcançar registro A". Isso reduz o código da ISR.'],
+      [16,'Para habilitar a interrupção por comparação do timer1 (compare match A), usa-se o registrador TIMSK1 com o bit OCIE1A em nível 1;',true,'Correto — o slide mostra: "Definimos a interrupção pela comparação com o registro A: TIMSK1 = (1 &lt;&lt; OCIE1A)".'],
+      [32,'Com clock de 16 MHz e prescaler de 8, o timer1 pode contar 2.000.000 ciclos por segundo — valor válido para gerar interrupção exatamente a cada segundo;',false,'Incorreto — 2.000.000 excede em muito o máximo do timer1 de 16 bits (65.535), sendo inválido. O slide mostra que mesmo 16.000.000/64 = 250.000 já é "inválido (> contagem máxima)".']
+    ]}
+];
+
+const CHECK='<svg viewBox="0 0 24 24"><polyline points="4 13 9 18 20 6"/></svg>';
+const STORE='se_sim_p2c_v1';
+const N_Q=QUESTIONS.length;
+const Q_VAL=10/N_Q;
+let saved={}; try{saved=JSON.parse(localStorage.getItem(STORE)||'{}')}catch(e){saved={}}
+const exam=document.getElementById('exam');
+const correctSum={};
+
+QUESTIONS.forEach(q=>{
+  const card=document.createElement('section'); card.className='q'; card.id='q'+q.n;
+  let cs=0; q.opts.forEach(o=>{ if(o[2]) cs+=o[0]; }); correctSum[q.n]=cs;
+  let optsHTML='';
+  q.opts.forEach(o=>{
+    const [bit,txt,ok,expl]=o; const id=`q${q.n}_${bit}`;
+    const chk=(saved['q'+q.n]||[]).includes(bit)?'checked':'';
+    optsHTML+=`
+      <li class="opt" id="opt_${id}">
+        <input type="checkbox" id="${id}" data-q="${q.n}" data-bit="${bit}" data-ok="${ok?1:0}" ${chk}>
+        <label for="${id}">
+          <span class="checkbox">${CHECK}</span>
+          <span class="bit">${String(bit).padStart(2,'0')}</span>
+          <span class="opt-txt">${txt}</span>
+          <span class="status" id="stat_${id}"></span>
+        </label>
+        <div class="expl">
+          <span class="verdict ${ok?'v-true':'v-false'}">${ok?'Correta · soma':'Incorreta · não soma'}</span>
+          <div style="margin-top:5px">${expl}</div>
+        </div>
+      </li>`;
+  });
+  card.innerHTML=`
+    <div class="q-head"><div class="q-num">${q.n}</div><div class="q-title">${q.title}</div></div>
+    <ul class="opts">${optsHTML}</ul>
+    <div class="q-foot">
+      <div class="foot-btns">
+        <button class="btn clearbtn" data-clear="${q.n}">Limpar</button>
+        <button class="btn checkbtn" data-check="${q.n}">Conferir</button>
+      </div>
+      <div class="sum-box">
+        <span class="sum-label">Sua soma</span>
+        <span class="sum-val" id="sum${q.n}">0</span>
+        <span class="correct-sum" id="csum${q.n}"></span>
+      </div>
+      <div class="score-box">
+        <span class="score-label">Pontos</span>
+        <span class="score-val" id="sv${q.n}">—</span>
+        <span class="score-max">/ ${Q_VAL.toFixed(2)}</span>
+      </div>
+    </div>`;
+  exam.appendChild(card);
+});
+
+const sheet=document.getElementById('sheet');
+const firstBtn=document.getElementById('revealAll');
+QUESTIONS.forEach(q=>{
+  const c=document.createElement('div'); c.className='cell'; c.id='cell'+q.n;
+  c.innerHTML=`<span class="c-q">Q${q.n}</span><span class="c-v" id="cv${q.n}">—</span>`;
+  sheet.insertBefore(c,firstBtn);
+});
+const gCell=document.createElement('div'); gCell.className='grade-cell'; gCell.id='gradeCell';
+gCell.innerHTML='<span class="g-lbl">Nota Final</span><span class="g-val" id="gradeVal">—</span><span class="g-sub" id="gradeSub"></span>';
+sheet.insertBefore(gCell,firstBtn);
+
+function calcQuestionScore(qn){
+  const q=QUESTIONS.find(x=>x.n===+qn);
+  const nCorrect=q.opts.filter(o=>o[2]).length;
+  const perCorrect=Q_VAL/nCorrect;
+  let hit=0,extra=0;
+  document.querySelectorAll(`input[data-q="${qn}"]`).forEach(b=>{
+    if(b.checked&&b.dataset.ok==='1') hit++;
+    if(b.checked&&b.dataset.ok==='0') extra++;
+  });
+  return Math.max(0,hit-extra)*perCorrect;
+}
+
+function updateGrade(){
+  let total=0,nRevealed=0;
+  QUESTIONS.forEach(q=>{
+    if(document.getElementById('q'+q.n).classList.contains('revealed')){
+      nRevealed++; total+=calcQuestionScore(q.n);
+    }
+  });
+  if(nRevealed===0) return;
+  document.getElementById('gradeVal').textContent=total.toFixed(1);
+  document.getElementById('gradeSub').textContent=nRevealed===N_Q?'/ 10':'/ 10 (parcial)';
+}
+
+function recalc(qn){
+  let sum=0; const picked=[];
+  document.querySelectorAll(`input[data-q="${qn}"]`).forEach(b=>{
+    if(b.checked){sum+=+b.dataset.bit;picked.push(+b.dataset.bit);}});
+  document.getElementById('sum'+qn).textContent=sum;
+  const cell=document.getElementById('cell'+qn);
+  document.getElementById('cv'+qn).textContent=picked.length?sum:'—';
+  cell.classList.toggle('filled',picked.length>0);
+  saved['q'+qn]=picked; try{localStorage.setItem(STORE,JSON.stringify(saved))}catch(e){}
+  if(document.getElementById('q'+qn).classList.contains('revealed')) markCell(qn);
+}
+
+function reveal(qn){
+  const card=document.getElementById('q'+qn); card.classList.add('revealed');
+  document.querySelectorAll(`input[data-q="${qn}"]`).forEach(b=>{
+    const id=b.id, ok=b.dataset.ok==='1', li=document.getElementById('opt_'+id),
+          st=document.getElementById('stat_'+id);
+    li.classList.toggle('should',ok); li.classList.toggle('shouldnt',!ok);
+    st.className='status';
+    if(ok&&b.checked){st.classList.add('st-hit');st.textContent='✓ acertou';}
+    else if(ok&&!b.checked){st.classList.add('st-miss');st.textContent='✗ faltou';}
+    else if(!ok&&b.checked){st.classList.add('st-extra');st.textContent='✗ a mais';}
+    else{st.classList.add('st-ok');st.textContent='ok';}
+  });
+  const cs=correctSum[qn], el=document.getElementById('csum'+qn);
+  el.innerHTML=`· correta: <b>${cs}</b>`;
+  markCell(qn);
+  const score=calcQuestionScore(qn);
+  const sv=document.getElementById('sv'+qn);
+  sv.textContent=score.toFixed(2);
+  sv.classList.toggle('bad', score < Q_VAL/2);
+  updateGrade();
+}
+
+function markCell(qn){
+  const userSum=+document.getElementById('sum'+qn).textContent;
+  const match=userSum===correctSum[qn];
+  document.getElementById('cell'+qn).classList.toggle('match',match);
+  document.getElementById('csum'+qn).classList.toggle('bad',!match);
+}
+
+document.addEventListener('change',e=>{if(e.target.matches('input[type=checkbox]'))recalc(e.target.dataset.q)});
+document.addEventListener('click',e=>{
+  if(e.target.matches('[data-clear]')){const qn=e.target.dataset.clear;
+    document.querySelectorAll(`input[data-q="${qn}"]`).forEach(b=>b.checked=false);recalc(qn);}
+  if(e.target.matches('[data-check]'))reveal(e.target.dataset.check);
+  if(e.target.id==='revealAll')QUESTIONS.forEach(q=>reveal(q.n));
+});
+QUESTIONS.forEach(q=>recalc(q.n));
+</script>
+</body>
+</html>
