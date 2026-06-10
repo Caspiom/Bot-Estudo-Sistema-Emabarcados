@@ -1,34 +1,21 @@
 import random
 
-from core.ui import C, cls, hr, title, ask, pause, resultado_sessao, nav_prompt
-from core.executor import rodar_questao
-from core.progress import save_progress
+from core.ui import C, cls, title, pause, label_prova, escolher_prova, hr, secao
+from core.executor import rodar_lista_questoes
 from data.questoes import QUESTOES
-
-
-def escolher_prova():
-    print(f"\n  {C.BOLD}Filtrar por prova?{C.RESET}")
-    print(f"  {C.YELLOW}[1]{C.RESET} 📗 Prova 1 (slides 0–236) — revisão")
-    print(f"  {C.YELLOW}[2]{C.RESET} 📘 Prova 2 (slides 237–307) — conteúdo novo")
-    print(f"  {C.YELLOW}[3]{C.RESET} 🔀 Todas (misto)\n")
-    while True:
-        e = ask("  Escolha: ")
-        if e == "1":
-            return "p1_"
-        if e == "2":
-            return "p2_"
-        if e == "3":
-            return ""
-        print(f"  {C.RED}Digite 1, 2 ou 3.{C.RESET}")
 
 
 def modo_quiz(prog, n=10):
     cls()
     title("⚡ QUIZ INTELIGENTE", C.MAGENTA)
+    print(f"  {C.DIM}Monta 10 questões priorizando seus pontos fracos.{C.RESET}\n")
+    print(f"  {C.DIM}Distribuição: até 4 questões CRÍTICAS  ·  4 IMPORTANTES  ·  2 COMPLEMENTARES{C.RESET}\n")
+
     prefixo = escolher_prova()
     erros = prog.get("erros", {})
     pool = [q for q in QUESTOES if q["topico"].startswith(prefixo)]
     pool = sorted(pool, key=lambda q: -erros.get(q["id"], 0))
+
     tier_s = [q for q in pool if q.get("tier") == "S"]
     tier_a = [q for q in pool if q.get("tier") == "A"]
     tier_b = [q for q in pool if q.get("tier") == "B"]
@@ -39,30 +26,25 @@ def modo_quiz(prog, n=10):
     if not qs:
         qs = pool
     qs = qs[:n]
-    random.shuffle(qs)
-    label = {"p1_": "Prova 1", "p2_": "Prova 2", "": "Todas as provas"}.get(prefixo, "")
+
+    lp = label_prova(prefixo)
     cls()
-    title(f"⚡ QUIZ — {label} — {len(qs)} questões", C.MAGENTA)
+    title(f"⚡ QUIZ — {lp}", C.MAGENTA)
+    print(f"  {C.BOLD}{len(qs)} questões selecionadas.{C.RESET}")
+    tier_counts = {
+        "S": sum(1 for q in qs if q.get("tier") == "S"),
+        "A": sum(1 for q in qs if q.get("tier") == "A"),
+        "B": sum(1 for q in qs if q.get("tier") == "B"),
+    }
+    partes = []
+    if tier_counts["S"]:
+        partes.append(f"{C.RED}{tier_counts['S']} críticas{C.RESET}")
+    if tier_counts["A"]:
+        partes.append(f"{C.YELLOW}{tier_counts['A']} importantes{C.RESET}")
+    if tier_counts["B"]:
+        partes.append(f"{C.BLUE}{tier_counts['B']} complementares{C.RESET}")
+    if partes:
+        print(f"  {C.DIM}Composição:{C.RESET}  {'  ·  '.join(partes)}")
+    print()
     pause()
-    i = 0
-    seen: set[int] = set()
-    corretas = 0
-    while i < len(qs):
-        q = qs[i]
-        cls()
-        hr()
-        primeira_vez = i not in seen
-        acertou = rodar_questao(q, i + 1, len(qs), prog, update_prog=primeira_vez)
-        if primeira_vez:
-            seen.add(i)
-            corretas += int(acertou)
-            save_progress(prog)
-        nav = nav_prompt(i, len(qs))
-        if nav == "voltar":
-            i -= 1
-        elif nav == "menu":
-            return
-        else:
-            i += 1
-    resultado_sessao(corretas, len(seen))
-    pause()
+    rodar_lista_questoes(qs, prog)

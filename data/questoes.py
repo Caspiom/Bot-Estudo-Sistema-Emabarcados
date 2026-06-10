@@ -224,3 +224,13 @@ QUESTOES = [
      "resposta": "B",
      "explicacao": "Timer0/2: 8 bits → 0 a 255. Timer1: 16 bits → 0 a 65535. Com prescaler 256: Timer0 dura ~4ms; Timer1 ~1 segundo."},
 ]
+
+# ── v2.0: estende o banco com as questões do pacote P2 (normalizadas) ──
+from data.questoes_p2 import QUESTOES_P2_EXTRA
+QUESTOES.extend(QUESTOES_P2_EXTRA)
+
+# Unifica tópicos antigos (amplos) nas chaves canônicas, evitando duplicatas
+# de assunto no menu de Estudo por Tópico / Quiz.
+from data.topicos import topico_canonico
+for _q in QUESTOES:
+    _q["topico"] = topico_canonico(_q["topico"])
