@@ -1,6 +1,6 @@
 """
-Modo Aula — apresenta explicações didáticas dos slides no estilo do Prof. Marco Câmara.
-Lê arquivos de aulas/explicacoes/ (estáticos); cai para texto bruto se não existir.
+Modo Aula — explica os slides no estilo do Prof. Marco Câmara.
+Usa aulas/explicacoes/ (didático); cai para slides brutos se não existir.
 """
 import random
 import re
@@ -8,16 +8,15 @@ import sys
 import time
 from pathlib import Path
 
-from core.ui import C, cls, hr, title, ask, pause, resultado_sessao, nav_prompt
-from core.executor import rodar_questao
-from core.progress import save_progress
+from core.ui import C, cls, title, ask, pause, hr, secao, flush_stdin
+from core.executor import rodar_lista_questoes
 from data.topicos import TOPICOS, AULAS_MAP
 from data.avaliacoes import AVALIACOES
 
 AULAS_DIR = Path(__file__).parent.parent / "aulas"
 MARCO_ASCII_PATH = Path(__file__).parent.parent / "aulas" / "marco_ascii.txt"
+EXPLICACOES_DIR = AULAS_DIR / "explicacoes"
 
-# Frases de personalidade do Prof. Marco
 FRASES_MARCO = [
     "Você acredita que teve gente que marcou isso na prova? Não acredito.",
     "Isso aqui é básico, gente. BÁSICO. Mas precisa saber.",
@@ -40,7 +39,6 @@ def frase_marco():
 
 
 def _exibir_marco_ascii(com_frase: bool = False):
-    """Exibe o retrato ASCII do Prof. Marco com borda colorida."""
     if not MARCO_ASCII_PATH.exists():
         return
     linhas = MARCO_ASCII_PATH.read_text(encoding="utf-8").splitlines()
@@ -55,16 +53,14 @@ def _exibir_marco_ascii(com_frase: bool = False):
 
 
 def limpar_markdown(texto):
-    """Remove comentários HTML de slide e formata para terminal."""
     linhas = []
     for linha in texto.splitlines():
         if linha.startswith("<!-- Slide"):
-            # Extrai número do slide
             m = re.search(r"Slide (\d+)", linha)
             if m:
                 linhas.append(f"\n  {C.DIM}── slide {m.group(1)} ──{C.RESET}")
         elif linha.startswith("# "):
-            continue  # já usamos o título do tópico
+            continue
         elif linha == "---":
             continue
         elif linha.strip():
@@ -74,15 +70,9 @@ def limpar_markdown(texto):
     return "\n".join(linhas)
 
 
-EXPLICACOES_DIR = Path(__file__).parent.parent / "aulas" / "explicacoes"
-
-
 def _render_linha(l: str) -> str:
-    """Aplica formatação ANSI a uma linha de markdown."""
-    if l.startswith("## "):
-        return f"  {C.CYAN}{C.BOLD}{l[3:]}{C.RESET}"
-    if l.startswith("# "):
-        return f"  {C.CYAN}{C.BOLD}{l[2:]}{C.RESET}"
+    if l.startswith("## ") or l.startswith("# "):
+        return f"  {C.CYAN}{C.BOLD}{l.lstrip('#').strip()}{C.RESET}"
     if l.startswith("> "):
         return f"  {C.YELLOW}▶  {l[2:]}{C.RESET}"
     if l.startswith("---") and l.strip("- ") == "":
@@ -95,7 +85,6 @@ _ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 
 
 def _typewrite(texto: str, delay: float = 0.009, instant: bool = False):
-    """Imprime texto com efeito de máquina de escrever, ignorando ANSI nos delays."""
     if instant:
         print(texto)
         return
@@ -116,10 +105,6 @@ def _typewrite(texto: str, delay: float = 0.009, instant: bool = False):
 
 
 def _dividir_falas(texto: str) -> list[str]:
-    """
-    Divide o texto em falas (parágrafo ou título+parágrafo).
-    Separadores --- são descartados.
-    """
     blocos_raw = re.split(r"\n{2,}", texto.strip())
     falas, titulo_pendente = [], None
     for bloco in blocos_raw:
@@ -140,7 +125,6 @@ def _dividir_falas(texto: str) -> list[str]:
 
 
 def apresentar_conteudo(titulo, arquivos):
-    # Carrega texto: explicação estática ou fallback para slides brutos
     nome_base = arquivos[0].replace(".md", "_aula.md") if arquivos else ""
     exp_path = EXPLICACOES_DIR / nome_base
 
@@ -156,11 +140,10 @@ def apresentar_conteudo(titulo, arquivos):
     falas = _dividir_falas(texto)
     total = len(falas)
 
-    # Tela de abertura com retrato do prof.
     cls()
     title(f"🎓 {titulo}", C.CYAN)
     _exibir_marco_ascii(com_frase=True)
-    print(f"\n  {C.DIM}{total} falas — Enter avança · v volta · s pula · m menu{C.RESET}")
+    print(f"\n  {C.DIM}{total} falas  ·  Enter avança  ·  [v] volta  ·  [s] pula slides  ·  [m] menu{C.RESET}")
     input()
 
     i = 0
@@ -181,22 +164,34 @@ def apresentar_conteudo(titulo, arquivos):
                 _typewrite(_render_linha(l) + "\n")
 
         if frase:
-            _typewrite(f"\n  {C.MAGENTA}{C.BOLD}🧑‍🏫 Marco:{C.RESET} {C.MAGENTA}\"{frase}\"{C.RESET}\n")
+            _typewrite(
+                f"\n  {C.MAGENTA}{C.BOLD}🧑‍🏫 Marco:{C.RESET} "
+                f"{C.MAGENTA}\"{frase}\"{C.RESET}\n"
+            )
+
+        # ── Navegação — flush obrigatório para descartar teclas do typewriter ──
+        flush_stdin()
 
         if i == total - 1:
-            cls()
-            title(f"🎓 {titulo}", C.CYAN)
-            _exibir_marco_ascii()
-            print(frase_marco())
-            op = ask(f"\n  {C.DIM}[Enter para voltar · v fala anterior · m menu]{C.RESET}  ").lower().strip()
+            op = ask(
+                f"  {C.DIM}[Enter] fim da aula  ·  [v] fala anterior  ·  [m] menu{C.RESET}  "
+            ).lower().strip()
             if op == "v" and i > 0:
                 i -= 1
                 continue
             if op == "m":
                 return "menu"
+            # Só limpa a tela DEPOIS que o usuário pediu para avançar
+            cls()
+            title(f"🎓 {titulo}", C.CYAN)
+            _exibir_marco_ascii()
+            print(frase_marco())
+            pause("[Enter para voltar ao menu de tópicos]")
             break
 
-        op = ask(f"\n  {C.DIM}· · · (Enter próxima · v anterior · s pular · m menu){C.RESET}  ").lower().strip()
+        op = ask(
+            f"  {C.DIM}[Enter] próxima  ·  [v] anterior  ·  [s] pular slides  ·  [m] menu{C.RESET}  "
+        ).lower().strip()
         if op == "s":
             break
         elif op == "v" and i > 0:
@@ -208,26 +203,24 @@ def apresentar_conteudo(titulo, arquivos):
 
 
 def _listar_topicos(prefix, cor_header, label_prova):
-    """Retorna lista de (titulo, nome_arquivo) para os arquivos do prefix dado."""
     files = sorted(AULAS_DIR.glob(f"{prefix}_*.md"))
     opcoes = []
-    print(f"\n  {C.BOLD}{cor_header}── {label_prova} {'─' * (38 - len(label_prova))}{C.RESET}")
+    print(f"  {cor_header}{C.BOLD}── {label_prova} {'─' * (50 - len(label_prova))}{C.RESET}")
     for f in files:
         conteudo = f.read_text(encoding="utf-8", errors="ignore")
         titulo = re.search(r"^# (.+)$", conteudo, re.MULTILINE)
         titulo = titulo.group(1) if titulo else f.stem
         n = conteudo.count("<!-- Slide")
         idx = len(opcoes) + 1
-        print(f"  {C.YELLOW}[{idx:2d}]{C.RESET} {titulo} {C.DIM}({n} slides){C.RESET}")
+        print(f"  {C.YELLOW}[{idx:2d}]{C.RESET}  {titulo}  {C.DIM}({n} slides){C.RESET}")
         opcoes.append((titulo, f.name))
     return opcoes
 
 
 def _escolher_topico(opcoes):
-    """Pede ao usuário que escolha um tópico da lista. Retorna (titulo, arquivo) ou None."""
-    print(f"\n  {C.YELLOW}[ 0]{C.RESET} Voltar\n")
+    print(f"\n  {C.DIM}[0]  Voltar{C.RESET}\n")
     while True:
-        e = ask("  Escolha o tópico: ")
+        e = ask("  › ")
         if e == "0":
             return None
         try:
@@ -243,11 +236,14 @@ def modo_aula(prog):
     while True:
         cls()
         title("🎓 AULA COM O PROF. CÂMARA", C.CYAN)
-        print(f"\n  {C.BOLD}Qual prova você quer estudar?{C.RESET}\n")
-        print(f"  {C.YELLOW}[1]{C.RESET} 📗 Prova 1  {C.DIM}(Definição, Hardware, Arduino, Eletrônica, Memória, IoT){C.RESET}")
-        print(f"  {C.YELLOW}[2]{C.RESET} 📘 Prova 2  {C.DIM}(Medição, ADC/DAC/PWM, Registradores, Interrupções, Projeto){C.RESET}")
-        print(f"  {C.YELLOW}[0]{C.RESET} Voltar ao menu\n")
-        escolha = ask("  Escolha: ")
+
+        print(f"  {C.BOLD}Qual prova você quer estudar?{C.RESET}\n")
+        print(f"  {C.YELLOW}[1]{C.RESET}  📗 {C.BOLD}Prova 1{C.RESET}  "
+              f"{C.DIM}Definição · Hardware · Arduino · Eletrônica · Memória · IoT{C.RESET}")
+        print(f"  {C.YELLOW}[2]{C.RESET}  📘 {C.BOLD}Prova 2{C.RESET}  "
+              f"{C.DIM}Medição · ADC/DAC/PWM · Registradores · Interrupções · Projeto{C.RESET}")
+        print(f"\n  {C.DIM}[0]  Voltar{C.RESET}\n")
+        escolha = ask("  › ")
 
         if escolha == "0":
             return
@@ -262,53 +258,37 @@ def modo_aula(prog):
         else:
             opcoes = _listar_topicos("p2", C.CYAN, "PROVA 2")
 
+        print()
         resultado = _escolher_topico(opcoes)
         if resultado is None:
-            continue  # volta ao menu de prova
+            continue
 
         titulo_escolhido, arquivo_escolhido = resultado
         sinal = apresentar_conteudo(titulo_escolhido, [arquivo_escolhido])
         if sinal == "menu":
             return
 
-        # Questões pós-aula
         topico_key = next(
             (k for k, arqs in AULAS_MAP.items() if arquivo_escolhido in arqs),
             None,
         )
-
         qs = [q for q in AVALIACOES if q["topico"] == topico_key] if topico_key else []
+
+        cls()
+        title(f"🎓 {titulo_escolhido}", C.CYAN)
+
         if not qs:
-            print(f"\n  {C.YELLOW}Sem avaliações diárias mapeadas para este tópico ainda.{C.RESET}")
+            print(f"\n  {C.GREEN}✓  Aula concluída!{C.RESET}")
+            print(f"  {C.DIM}Sem avaliações diárias mapeadas para este tópico ainda.{C.RESET}\n")
             pause()
         else:
-            print(f"\n  {C.BOLD}Aula concluída! Hora das avaliações diárias do Prof. Câmara.{C.RESET}")
-            print(f"  {C.YELLOW}[1]{C.RESET} Responder avaliações diárias ({len(qs)} questões)")
-            print(f"  {C.YELLOW}[0]{C.RESET} Voltar\n")
-            e = ask("  Escolha: ")
+            print(f"\n  {C.GREEN}✓  Aula concluída!{C.RESET}  "
+                  f"{C.DIM}{len(qs)} questão(ões) do Prof. Câmara disponível(eis).{C.RESET}\n")
+            print(f"  {C.YELLOW}[1]{C.RESET}  Responder as avaliações diárias")
+            print(f"  {C.DIM}[0]  Voltar à lista de tópicos{C.RESET}\n")
+            e = ask("  › ")
             if e == "1":
-                random.shuffle(qs)
                 cls()
-                title(f"📋 AVALIAÇÕES DIÁRIAS — {titulo_escolhido}", C.MAGENTA)
-                qi = 0
-                seen: set[int] = set()
-                corretas = 0
-                while qi < len(qs):
-                    q = qs[qi]
-                    cls()
-                    hr(C.MAGENTA)
-                    primeira_vez = qi not in seen
-                    acertou = rodar_questao(q, qi + 1, len(qs), prog, update_prog=primeira_vez)
-                    if primeira_vez:
-                        seen.add(qi)
-                        corretas += int(acertou)
-                        save_progress(prog)
-                    nav = nav_prompt(qi, len(qs))
-                    if nav == "voltar":
-                        qi -= 1
-                    elif nav == "menu":
-                        return
-                    else:
-                        qi += 1
-                resultado_sessao(corretas, len(seen))
-                pause()
+                title(f"📋 AVALIAÇÕES — {titulo_escolhido}", C.MAGENTA)
+                if rodar_lista_questoes(qs, prog, cor=C.MAGENTA) == "menu":
+                    return
